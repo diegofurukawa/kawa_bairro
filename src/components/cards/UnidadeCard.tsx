@@ -74,6 +74,32 @@ export function UnidadeCard({ unidade, className, variant = 'grid', onEdit, onVi
           <div className="text-xs text-gray-500 flex-shrink-0">
             {new Date(unidade.createdAt).toLocaleDateString('pt-BR')}
           </div>
+
+          {/* Botões de ação */}
+          <div className="flex gap-1 flex-shrink-0">
+            {onView && (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => onView(unidade)}
+                className="h-7 w-7 p-0"
+                title="Visualizar"
+              >
+                <Eye className="h-3 w-3" />
+              </Button>
+            )}
+            {onEdit && (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => onEdit(unidade)}
+                className="h-7 w-7 p-0"
+                title="Editar"
+              >
+                <Edit className="h-3 w-3" />
+              </Button>
+            )}
+          </div>
         </div>
       </div>
     )

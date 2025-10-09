@@ -6,7 +6,7 @@ const globalForPrisma = globalThis as unknown as {
 
 // Set default DATABASE_URL for development if not set
 if (!process.env.DATABASE_URL) {
-  process.env.DATABASE_URL = 'file:./prisma/dev.db'
+  process.env.DATABASE_URL = 'file:./data/dev.db'
 }
 
 export const prisma = globalForPrisma.prisma ?? new PrismaClient({

@@ -24,6 +24,25 @@ export function QuadrasView({ quadras, unidades }: QuadrasViewProps) {
   const [viewMode, setViewMode] = React.useState<'grid' | 'list'>('grid')
   const [selectedUnidade, setSelectedUnidade] = React.useState<Unidade | null>(null)
   const [isModalOpen, setIsModalOpen] = React.useState(false)
+  const [isMobile, setIsMobile] = React.useState(false)
+
+  // Detect mobile screen size
+  React.useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768)
+    }
+    
+    checkMobile()
+    window.addEventListener('resize', checkMobile)
+    return () => window.removeEventListener('resize', checkMobile)
+  }, [])
+
+  // Force list view on mobile
+  React.useEffect(() => {
+    if (isMobile) {
+      setViewMode('list')
+    }
+  }, [isMobile])
 
   // Filtrar unidades baseado na pesquisa e filtros
   const filteredUnidades = React.useMemo(() => {
@@ -121,48 +140,50 @@ export function QuadrasView({ quadras, unidades }: QuadrasViewProps) {
 
   return (
     <div className="space-y-6">
-      {/* Estatísticas */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <div className="bg-white rounded-lg p-4 shadow-sm border">
-          <div className="flex items-center gap-3">
-            <MapPin className="h-5 w-5 text-blue-600" />
-            <div>
-              <p className="text-xl font-bold text-gray-900">{Object.keys(unidadesPorQuadra).length}</p>
-              <p className="text-sm text-gray-600">Quadras</p>
+      {/* Estatísticas - Hidden on mobile */}
+      {!isMobile && (
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <div className="bg-white rounded-lg p-4 shadow-sm border">
+            <div className="flex items-center gap-3">
+              <MapPin className="h-5 w-5 text-blue-600" />
+              <div>
+                <p className="text-xl font-bold text-gray-900">{Object.keys(unidadesPorQuadra).length}</p>
+                <p className="text-sm text-gray-600">Quadras</p>
+              </div>
+            </div>
+          </div>
+          
+          <div className="bg-white rounded-lg p-4 shadow-sm border">
+            <div className="flex items-center gap-3">
+              <Home className="h-5 w-5 text-green-600" />
+              <div>
+                <p className="text-xl font-bold text-gray-900">{filteredUnidades.length}</p>
+                <p className="text-sm text-gray-600">Unidades</p>
+              </div>
+            </div>
+          </div>
+          
+          <div className="bg-white rounded-lg p-4 shadow-sm border">
+            <div className="flex items-center gap-3">
+              <Users className="h-5 w-5 text-purple-600" />
+              <div>
+                <p className="text-xl font-bold text-gray-900">{totalMoradores}</p>
+                <p className="text-sm text-gray-600">Moradores</p>
+              </div>
+            </div>
+          </div>
+          
+          <div className="bg-white rounded-lg p-4 shadow-sm border">
+            <div className="flex items-center gap-3">
+              <Phone className="h-5 w-5 text-orange-600" />
+              <div>
+                <p className="text-xl font-bold text-gray-900">{totalContatos}</p>
+                <p className="text-sm text-gray-600">Contatos</p>
+              </div>
             </div>
           </div>
         </div>
-        
-        <div className="bg-white rounded-lg p-4 shadow-sm border">
-          <div className="flex items-center gap-3">
-            <Home className="h-5 w-5 text-green-600" />
-            <div>
-              <p className="text-xl font-bold text-gray-900">{filteredUnidades.length}</p>
-              <p className="text-sm text-gray-600">Unidades</p>
-            </div>
-          </div>
-        </div>
-        
-        <div className="bg-white rounded-lg p-4 shadow-sm border">
-          <div className="flex items-center gap-3">
-            <Users className="h-5 w-5 text-purple-600" />
-            <div>
-              <p className="text-xl font-bold text-gray-900">{totalMoradores}</p>
-              <p className="text-sm text-gray-600">Moradores</p>
-            </div>
-          </div>
-        </div>
-        
-        <div className="bg-white rounded-lg p-4 shadow-sm border">
-          <div className="flex items-center gap-3">
-            <Phone className="h-5 w-5 text-orange-600" />
-            <div>
-              <p className="text-xl font-bold text-gray-900">{totalContatos}</p>
-              <p className="text-sm text-gray-600">Contatos</p>
-            </div>
-          </div>
-        </div>
-      </div>
+      )}
 
       {/* Barra de pesquisa */}
       <div className="bg-white rounded-lg shadow-sm border p-4">
@@ -274,31 +295,33 @@ export function QuadrasView({ quadras, unidades }: QuadrasViewProps) {
 
       {/* Controles de visualização e resultados */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        {/* Controles de visualização */}
-        <div className="flex items-center gap-4">
-          <div className="flex border rounded-md">
-            <Button
-              variant={viewMode === 'grid' ? "default" : "ghost"}
-              size="sm"
-              onClick={() => setViewMode('grid')}
-              className="rounded-r-none"
-            >
-              <Grid3X3 className="h-4 w-4" />
-            </Button>
-            <Button
-              variant={viewMode === 'list' ? "default" : "ghost"}
-              size="sm"
-              onClick={() => setViewMode('list')}
-              className="rounded-l-none"
-            >
-              <List className="h-4 w-4" />
-            </Button>
+        {/* Controles de visualização - Hidden on mobile */}
+        {!isMobile && (
+          <div className="flex items-center gap-4">
+            <div className="flex border rounded-md">
+              <Button
+                variant={viewMode === 'grid' ? "default" : "ghost"}
+                size="sm"
+                onClick={() => setViewMode('grid')}
+                className="rounded-r-none"
+              >
+                <Grid3X3 className="h-4 w-4" />
+              </Button>
+              <Button
+                variant={viewMode === 'list' ? "default" : "ghost"}
+                size="sm"
+                onClick={() => setViewMode('list')}
+                className="rounded-l-none"
+              >
+                <List className="h-4 w-4" />
+              </Button>
+            </div>
+            
+            <div className="text-sm text-gray-600">
+              {viewMode === 'grid' ? 'Visualização em grade' : 'Visualização em lista'}
+            </div>
           </div>
-          
-          <div className="text-sm text-gray-600">
-            {viewMode === 'grid' ? 'Visualização em grade' : 'Visualização em lista'}
-          </div>
-        </div>
+        )}
 
         {/* Resultados encontrados */}
         <div className="text-sm text-gray-500">
