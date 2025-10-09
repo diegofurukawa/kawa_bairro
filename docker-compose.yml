@@ -1,0 +1,21 @@
+services:
+  app:
+    build:
+      context: .
+      args:
+        EXTERNAL_PORT: ${EXTERNAL_PORT:-3312}
+        INTERNAL_PORT: ${INTERNAL_PORT:-3312}        
+    ports:
+      - "${EXTERNAL_PORT:-3312}:${INTERNAL_PORT:-3312}"
+    networks:
+      furukawatech-network:
+        ipv4_address: 172.30.0.55   
+    env_file:
+      - docker.env
+    volumes:
+      - ./data:/app/data
+
+# Custom Network
+networks:
+  furukawatech-network:
+    external: true

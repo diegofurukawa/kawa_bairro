@@ -24,6 +24,13 @@ export interface UnidadeModalProps {
   }) => Promise<void>
 }
 
+export interface UnidadeModalErrors {
+  unidade_numero?: string
+  quadra_name?: string
+  mora?: string
+  contato?: string
+}
+
 export function UnidadeModal({ 
   unidade, 
   quadras, 
@@ -41,7 +48,7 @@ export function UnidadeModal({
     contato: [] as string[]
   })
 
-  const [errors, setErrors] = React.useState<Partial<typeof formData>>({})
+  const [errors, setErrors] = React.useState<UnidadeModalErrors>({})
 
   // Atualizar dados quando unidade muda
   React.useEffect(() => {
@@ -66,7 +73,7 @@ export function UnidadeModal({
   }
 
   const validateForm = (): boolean => {
-    const newErrors: Partial<typeof formData> = {}
+    const newErrors: UnidadeModalErrors = {}
     
     if (!formData.unidade_numero.trim()) {
       newErrors.unidade_numero = 'Número da unidade é obrigatório'

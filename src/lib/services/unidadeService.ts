@@ -1,10 +1,20 @@
 import { prisma } from '@/lib/prisma'
 import { CreateUnidadeInput, UpdateUnidadeInput } from '@/lib/validations/unidade'
 import type { Unidade } from '@/types'
+import { parseJsonArray } from '@/lib/utils/data'
+
+// Função para transformar dados do Prisma para o formato Unidade
+function transformUnidade(data: any): Unidade {
+  return {
+    ...data,
+    mora: data.mora ? parseJsonArray(data.mora) : null,
+    contato: data.contato ? parseJsonArray(data.contato) : null
+  }
+}
 
 export class UnidadeService {
   static async findAll(): Promise<Unidade[]> {
-    return await prisma.unidade.findMany({
+    const unidades = await prisma.unidade.findMany({
       include: {
         quadra: true
       },
@@ -13,38 +23,42 @@ export class UnidadeService {
         { unidade_numero: 'asc' }
       ]
     })
+    return unidades.map(transformUnidade)
   }
 
   static async findById(id: number): Promise<Unidade | null> {
-    return await prisma.unidade.findUnique({
+    const unidade = await prisma.unidade.findUnique({
       where: { unidade_id: id },
       include: {
         quadra: true
       }
     })
+    return unidade ? transformUnidade(unidade) : null
   }
 
   static async findByNumero(numero: string): Promise<Unidade | null> {
-    return await prisma.unidade.findUnique({
+    const unidade = await prisma.unidade.findUnique({
       where: { unidade_numero: numero },
       include: {
         quadra: true
       }
     })
+    return unidade ? transformUnidade(unidade) : null
   }
 
   static async findByQuadra(quadraId: number): Promise<Unidade[]> {
-    return await prisma.unidade.findMany({
+    const unidades = await prisma.unidade.findMany({
       where: { quadra_id: quadraId },
       include: {
         quadra: true
       },
       orderBy: { unidade_numero: 'asc' }
     })
+    return unidades.map(transformUnidade)
   }
 
   static async create(data: CreateUnidadeInput): Promise<Unidade> {
-    return await prisma.unidade.create({
+    const unidade = await prisma.unidade.create({
       data: {
         unidade_numero: data.unidade_numero,
         quadra_id: data.quadra_id,
@@ -55,6 +69,7 @@ export class UnidadeService {
         quadra: true
       }
     })
+    return transformUnidade(unidade)
   }
 
   static async update(id: number, data: UpdateUnidadeInput): Promise<Unidade> {
@@ -66,13 +81,14 @@ export class UnidadeService {
       updateData.contato = data.contato ? JSON.stringify(data.contato) : null
     }
 
-    return await prisma.unidade.update({
+    const unidade = await prisma.unidade.update({
       where: { unidade_id: id },
       data: updateData,
       include: {
         quadra: true
       }
     })
+    return transformUnidade(unidade)
   }
 
   static async delete(id: number): Promise<void> {

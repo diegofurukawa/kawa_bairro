@@ -1,0 +1,10 @@
+node_modules
+.next
+.env*
+.git
+README.md
+docs
+upload
+*.log
+.DS_Store
+Thumbs.db

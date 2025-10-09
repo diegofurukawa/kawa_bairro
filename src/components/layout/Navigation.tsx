@@ -45,7 +45,7 @@ export function Navigation() {
             {navItems.map((item) => {
               const isActive = pathname === item.href
               return (
-                <Link key={item.href} href={item.href}>
+                <Link key={item.href} href={item.href as any}>
                   <Button
                     variant={isActive ? 'default' : 'ghost'}
                     size="sm"

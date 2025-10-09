@@ -24,11 +24,18 @@ export interface FormData {
   contato: string[]
 }
 
+export interface FormErrors {
+  unidade_numero?: string
+  quadra_name?: string
+  mora?: string
+  contato?: string
+}
+
 export function UnidadeForm({ quadras, className, onQuadraCreated }: UnidadeFormProps) {
   const router = useRouter()
   const { success, error, info } = useToast()
   const [isSubmitting, setIsSubmitting] = React.useState(false)
-  const [errors, setErrors] = React.useState<Partial<FormData>>({})
+  const [errors, setErrors] = React.useState<FormErrors>({})
   
   const [formData, setFormData] = React.useState<FormData>({
     unidade_numero: '',
@@ -51,7 +58,7 @@ export function UnidadeForm({ quadras, className, onQuadraCreated }: UnidadeForm
   }
 
   const validateForm = (): boolean => {
-    const newErrors: Partial<FormData> = {}
+    const newErrors: FormErrors = {}
     
     if (!formData.unidade_numero.trim()) {
       newErrors.unidade_numero = 'Número da unidade é obrigatório'
@@ -150,10 +157,10 @@ export function UnidadeForm({ quadras, className, onQuadraCreated }: UnidadeForm
       success('Unidade cadastrada com sucesso!', 'A unidade foi adicionada ao sistema.')
       router.refresh()
       
-    } catch (error) {
-      console.error('Erro ao cadastrar unidade:', error)
+    } catch (err) {
+      console.error('Erro ao cadastrar unidade:', err)
       
-      const errorMessage = error instanceof Error ? error.message : 'Erro ao cadastrar unidade'
+      const errorMessage = err instanceof Error ? err.message : 'Erro ao cadastrar unidade'
       
       // Se for erro de unidade duplicada, destacar o campo
       if (errorMessage.includes('já existe')) {
@@ -192,8 +199,8 @@ export function UnidadeForm({ quadras, className, onQuadraCreated }: UnidadeForm
       if (onQuadraCreated) {
         onQuadraCreated()
       }
-    } catch (error) {
-      console.error('Erro ao criar quadra:', error)
+    } catch (err) {
+      console.error('Erro ao criar quadra:', err)
       error('Erro ao criar quadra', 'Tente novamente ou escolha uma quadra existente.')
     }
   }

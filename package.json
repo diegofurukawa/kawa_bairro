@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "prisma generate && next build",
+    "build": "next build",
     "start": "next start",
     "lint": "next lint",
     "test": "jest",
@@ -14,6 +14,7 @@
     "db:push": "prisma db push",
     "db:studio": "prisma studio",
     "db:seed": "tsx prisma/seed.ts",
+    "db:init": "prisma generate && prisma db push && tsx prisma/seed.ts",
     "db:import": "node scripts/import-data.js",
     "db:deploy": "node scripts/deploy-db-simple.js",
     "db:deploy:prod": "node scripts/deploy-prod.js",
@@ -23,7 +24,7 @@
   "dependencies": {
     "@libsql/client": "^0.15.15",
     "@neondatabase/serverless": "^1.0.2",
-    "@prisma/client": "^5.7.0",
+    "@prisma/client": "^6.17.0",
     "@radix-ui/react-label": "^2.1.7",
     "@radix-ui/react-select": "^2.0.0",
     "@radix-ui/react-slot": "^1.0.2",
@@ -50,7 +51,7 @@
     "jest-environment-jsdom": "^29.7.0",
     "postcss": "^8.4.32",
     "prettier": "^3.1.0",
-    "prisma": "^5.7.0",
+    "prisma": "^6.17.0",
     "tailwindcss": "^3.4.0",
     "tsx": "^4.6.0",
     "typescript": "^5.3.0"
