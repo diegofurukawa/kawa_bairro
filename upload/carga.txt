@@ -1,0 +1,162 @@
+QUADRA B1	
+B1-10 Antonia e Édio 
+	
+QUADRA C	
+C02	Emilin e William 
+C23	Amanda e Fernando 
+	
+QUADRA C1	
+C1-01 Richard e Vitória 
+C1-02 Ellen e Daniel
+C1-03 Anderson e Cintia
+C1-05 João e Luany 
+C1-09 Marina e lucca
+C1-10 Gesiel e Monike 
+C1-15 Rodrigo Polla 
+C1-18 Evelyn e Carlos 
+C1-19 Nathália e Emerson 
+C1-26 Rener e Jéssica 
+	
+QUADRA D	
+D15 Manoel e Claudia 
+D16 Jennifer Basaglia
+	
+QUADRA D1	
+D1-01 Rodrigo e Karen 
+D1-02 Ana e Fabiola 
+D1-03 Bruna Xavier 
+D1-04 Marcela e Antônio
+D1-09 Nathalia e Lucas 
+D1-10 Rodrigo e Fernanda 
+D1-12 Michel e Tatiana 
+D1-19 Franciele e Cristiano 
+D1-21 Aline e Rafael 
+D1-22 Gessé e Raquel 
+D1-24 Alex e Luciana
+D1-25 Ana e Yasmin 
+D1-26 Amily e Guilherme 
+D1-31 Júlia e Raphael 
+D1-32 Isabel e Mauricio 
+D1-33 Victor 
+D1-34 Silvana e Jameson 
+D1-36 Erica e Fernando
+	
+QUADRA E	
+E12 Marília e Eduardo 
+E15 Davi e Luzinete 
+E26 Aline e José 
+E45 Lorena Martins 
+	
+QUADRA E1	
+E1-05 Jaqueline 
+E1-06 Laís e Paulo 
+E1-34 Nathana 
+E1-35 Isabella e Matheus 
+	
+QUADRA H
+H01 Juliana e Márcio 
+H07 Fabrício e Luciana 
+H10 Maria e Fernando           
+H12 Fernando e Sandra 
+H13 Tainá e Abner 
+H16 Jessica e Helio 
+
+QUADRA I
+I32 - Uélita e Ronaldo 
+	
+QUADRA K	
+K03 Adriana e Flávio 
+K18 Rebeka e Tarcísio 
+K30 Tarcila e Gabriel
+K35 Ana Paula e Carlos 
+K22 leivilene conde
+
+	
+QUADRA K1	
+K1-03 Bárbara 
+K1-04 Rafaela e Raphael 
+	
+QUADRA L	
+L09 Milena 
+L14 Gleide e Willian
+L15 Claudete e Leandro 
+L30 Emily e Lucas
+L36 Gislene e André 
+L38 Danielly e Edmilson 
+L40 Sidiclei e Joselita 
+	
+QUADRA N	
+N12 Clayton e Larissa 
+	
+QUADRA O	
+O12 Guilherme Menegatti 
+O22 Fernando e Bárbara 
+O40 Luciano e Salete
+O47 Giovana e Carla 
+O23 zenilda 
+O7 Tais e Renan
+
+QUADRA P	
+P05 Ana Carolina e Matheus
+P09 Guilherme e Pâmela 
+P34 Cleiton e Paloma 
+P40 Mayra e Lucas 
+P16 Gabrielle e Gustavo 
+	
+QUADRA R	
+R03 Rafaela e Leonardo 
+R05 Andressa e Adiel 
+R35 Pâmella e Luanderson 
+R42 Aline 
+R28 Rafael e Sara 
+R40 Anderson  e Raphaela
+	
+QUADRA S	
+S05 Elenilza e Linconl 
+S08 Giovani e Cleusa
+S14 Leticia
+S34 Giovanny e Juliana 
+	
+QUADRA U	
+U07 Gabriel e Giovana 
+	
+QUADRA V	
+V11 Leidiana e João 
+V12 Juthay e Regina 
+V18 Fernando Dominguez 
+V20 Rafael e Suelen 
+V22 Jéssyca e Felipe 
+V23 Jeniffer e Rafael  
+V36 Larissa
+V37 José e Bianca 
+V38 Karoline e Daniel 
+	 
+QUADRA W	
+W04 Maycon e Bianca
+W25 Danilo 
+W26 Jerusa e Jhow 
+W29 João e Amanda
+W33 Thayna e Gledison 
+W7- Franciele e Bruno 
+	
+QUADRA W1	
+W1-06 Jessé e Juliana 
+	
+QUADRA Y	
+Y05 Felipe e Roberta 
+Y10 Brenda e Everton 
+Y11 Eduardo e Adrielle 
+Y12 Bruna Leme 
+Y13 Jackson e Paloma 
+Y17 Isadora e Gustavo 
+Y22 Barbara e Marina 
+	
+QUADRA Z	
+Z06 Adriele Bertolini 
+Z07 Ronny e Regiane 
+Z10 Marinaldo e Patricia 
+Z12 Márcio e Gilmara 
+Z16 Douglas Guilbert 
+Z24 Matheus e Julia
+Z25 Amanda e Felipe 
+Z30 Franciane Gomes
