@@ -1,7 +1,7 @@
 'use client'
 
 import * as React from 'react'
-import { Search, Filter, MapPin, Home, Users, Phone, Grid3X3, List, X, ChevronDown } from 'lucide-react'
+import { Search, MapPin, Home, Users, Phone, Grid3X3, List, X } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
@@ -20,7 +20,6 @@ export interface QuadrasViewProps {
 export function QuadrasView({ quadras, unidades }: QuadrasViewProps) {
   const [searchTerm, setSearchTerm] = React.useState('')
   const [selectedQuadra, setSelectedQuadra] = React.useState<string>('all')
-  const [showFilters, setShowFilters] = React.useState(false)
   const [viewMode, setViewMode] = React.useState<'grid' | 'list'>('grid')
   const [selectedUnidade, setSelectedUnidade] = React.useState<Unidade | null>(null)
   const [isModalOpen, setIsModalOpen] = React.useState(false)
@@ -201,97 +200,38 @@ export function QuadrasView({ quadras, unidades }: QuadrasViewProps) {
             </div>
           </div>
 
-          {/* Filtros */}
+          {/* Filtro de Quadra */}
+          <div className="w-full lg:w-64">
+            <Select value={selectedQuadra} onValueChange={setSelectedQuadra}>
+              <SelectTrigger>
+                <SelectValue placeholder="Todas as quadras" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Todas as quadras</SelectItem>
+                {quadras.map(quadra => (
+                  <SelectItem key={quadra.quadra_id} value={quadra.quadra_name}>
+                    {quadra.quadra_name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          {/* Botão Remover Filtros */}
           <Button
-            variant={showFilters ? "default" : "outline"}
-            onClick={() => setShowFilters(!showFilters)}
+            variant="outline"
+            onClick={() => {
+              setSearchTerm('')
+              setSelectedQuadra('all')
+            }}
             className="gap-2"
           >
-            <Filter className="h-4 w-4" />
-            Filtros
-            {showFilters && <X className="h-4 w-4" />}
+            <X className="h-4 w-4" />
+            Remover Filtros
           </Button>
         </div>
       </div>
 
-      {/* Filtros expandidos */}
-      {showFilters && (
-        <div className="bg-white rounded-lg shadow-sm border p-4 space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-gray-700">
-                Filtrar por Quadra
-              </label>
-              <Select value={selectedQuadra} onValueChange={setSelectedQuadra}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Todas as quadras" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">Todas as quadras</SelectItem>
-                  {quadras.map(quadra => (
-                    <SelectItem key={quadra.quadra_id} value={quadra.quadra_name}>
-                      {quadra.quadra_name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-
-            {/* Filtro por Número de Moradores */}
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-gray-700">
-                Moradores por Unidade
-              </label>
-              <Select>
-                <SelectTrigger>
-                  <SelectValue placeholder="Qualquer quantidade" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="any">Qualquer quantidade</SelectItem>
-                  <SelectItem value="1">1 morador</SelectItem>
-                  <SelectItem value="2">2 moradores</SelectItem>
-                  <SelectItem value="3+">3+ moradores</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
-            {/* Filtro por Data */}
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-gray-700">
-                Cadastrado em
-              </label>
-              <Select>
-                <SelectTrigger>
-                  <SelectValue placeholder="Qualquer data" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="any">Qualquer data</SelectItem>
-                  <SelectItem value="today">Hoje</SelectItem>
-                  <SelectItem value="week">Esta semana</SelectItem>
-                  <SelectItem value="month">Este mês</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-
-          {/* Ações dos filtros */}
-          <div className="flex flex-wrap gap-2 pt-2">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => {
-                setSearchTerm('')
-                setSelectedQuadra('all')
-              }}
-            >
-              Limpar Filtros
-            </Button>
-            <div className="text-sm text-gray-500 flex items-center">
-              {filteredUnidades.length} de {unidades.length} unidades
-            </div>
-          </div>
-        </div>
-      )}
 
       {/* Controles de visualização e resultados */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
