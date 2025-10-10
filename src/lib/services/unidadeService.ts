@@ -14,6 +14,12 @@ function transformUnidade(data: any): Unidade {
 
 export class UnidadeService {
   static async findAll(): Promise<Unidade[]> {
+    console.log('🔍 [UnidadeService] Executando findAll...')
+    
+    // Teste direto no banco
+    const count = await prisma.unidade.count()
+    console.log(`🔍 [UnidadeService] Total de unidades no banco: ${count}`)
+    
     const unidades = await prisma.unidade.findMany({
       include: {
         quadra: true
@@ -23,7 +29,10 @@ export class UnidadeService {
         { unidade_numero: 'asc' }
       ]
     })
-    return unidades.map(transformUnidade)
+    console.log(`📊 [UnidadeService] Prisma retornou ${unidades.length} unidades`)
+    const transformed = unidades.map(transformUnidade)
+    console.log(`✅ [UnidadeService] Transformadas ${transformed.length} unidades`)
+    return transformed
   }
 
   static async findById(id: number): Promise<Unidade | null> {

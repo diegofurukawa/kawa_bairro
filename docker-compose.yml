@@ -3,10 +3,17 @@ services:
     build:
       context: .
       args:
-        EXTERNAL_PORT: ${EXTERNAL_PORT:-3312}
-        INTERNAL_PORT: ${INTERNAL_PORT:-3312}        
+        EXTERNAL_PORT: ${EXTERNAL_PORT:-3313}
+        INTERNAL_PORT: ${INTERNAL_PORT:-3313}
+        POSTGRES_HOST: ${POSTGRES_HOST}
+        POSTGRES_PORT: ${POSTGRES_PORT}
+        POSTGRES_USER: ${POSTGRES_USER}
+        POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+        POSTGRES_DB: ${POSTGRES_DB}
+        POSTGRES_SSL: false        
+        DATABASE_URL: ${DATABASE_URL:-postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}}
     ports:
-      - "${EXTERNAL_PORT:-3312}:${INTERNAL_PORT:-3312}"
+      - "${EXTERNAL_PORT:-3313}:${INTERNAL_PORT:-3313}"
     networks:
       furukawatech-network:
         ipv4_address: 172.30.0.55   

@@ -18,6 +18,13 @@ export interface QuadrasViewProps {
 }
 
 export function QuadrasView({ quadras, unidades }: QuadrasViewProps) {
+  console.log('🔍 [QuadrasView] Props recebidas:', { 
+    quadrasCount: quadras.length, 
+    unidadesCount: unidades.length,
+    quadras: quadras.map(q => ({ id: q.quadra_id, nome: q.quadra_name })),
+    unidades: unidades.map(u => ({ id: u.unidade_id, numero: u.unidade_numero, quadra: u.quadra?.quadra_name }))
+  })
+  
   const [searchTerm, setSearchTerm] = React.useState('')
   const [selectedQuadras, setSelectedQuadras] = React.useState<string[]>([])
   const [dropdownValue, setDropdownValue] = React.useState<string>('all')
@@ -67,7 +74,14 @@ export function QuadrasView({ quadras, unidades }: QuadrasViewProps) {
 
   // Filtrar unidades baseado na pesquisa e filtros
   const filteredUnidades = React.useMemo(() => {
-    return unidades.filter(unidade => {
+    console.log('🔍 [QuadrasView] Filtrando unidades:', {
+      totalUnidades: unidades.length,
+      searchTerm,
+      selectedQuadras,
+      unidades: unidades.map(u => ({ numero: u.unidade_numero, quadra: u.quadra?.quadra_name }))
+    })
+    
+    const filtered = unidades.filter(unidade => {
       // Converter dados JSON para arrays se necessário
       const moradores = parseJsonArray(unidade.mora)
       const contatos = parseJsonArray(unidade.contato)
@@ -87,6 +101,9 @@ export function QuadrasView({ quadras, unidades }: QuadrasViewProps) {
 
       return matchesSearch && matchesQuadra
     })
+    
+    console.log(`📊 [QuadrasView] Unidades filtradas: ${filtered.length}`)
+    return filtered
   }, [unidades, searchTerm, selectedQuadras])
 
   // Agrupar unidades por quadra

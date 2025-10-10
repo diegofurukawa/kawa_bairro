@@ -4,10 +4,10 @@ const nextConfig = {
   images: {
     domains: [],
   },
-  output: 'standalone',
-  devIndicators: {
-    buildActivity: false,
-  },
+  // Removido output: 'standalone' que estava causando problemas
+  // devIndicators: {
+  //   buildActivity: false,
+  // },
 }
 
 module.exports = nextConfig

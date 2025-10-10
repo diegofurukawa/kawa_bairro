@@ -68,10 +68,17 @@ async function importCargaData() {
   try {
     console.log('🚀 Iniciando importação dos dados de carga...')
     
-    // Limpar dados existentes
-    console.log('🧹 Limpando dados existentes...')
-    await prisma.unidade.deleteMany()
-    await prisma.quadra.deleteMany()
+    // Verificar se já existem dados para evitar importação duplicada
+    const existingQuadras = await prisma.quadra.count()
+    const existingUnidades = await prisma.unidade.count()
+    
+    if (existingQuadras > 0 || existingUnidades > 0) {
+      console.log('⚠️ Dados já existem no banco. Pulando importação para evitar duplicação.')
+      console.log(`📊 Dados existentes: ${existingQuadras} quadras, ${existingUnidades} unidades`)
+      return
+    }
+    
+    console.log('📥 Nenhum dado existente encontrado. Prosseguindo com a importação...')
     
     // Parse do arquivo
     const filePath = path.join(process.cwd(), 'upload', 'carga.txt')

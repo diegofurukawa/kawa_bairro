@@ -6,6 +6,9 @@ import { Home, Users, MapPin, ArrowRight, Plus } from 'lucide-react'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 
+// Forçar Server-Side Rendering
+export const dynamic = 'force-dynamic'
+
 async function getData() {
   try {
     const [quadras, unidades] = await Promise.all([
