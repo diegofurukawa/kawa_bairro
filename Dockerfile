@@ -17,11 +17,15 @@ RUN npm install
 # Copy rest of source code
 COPY . .
 
+# Ensure upload directory exists and copy carga.txt
+RUN mkdir -p /app/upload
+COPY upload/carga.txt /app/upload/carga.txt
+
 # Set database URL for build
 ENV DATABASE_URL="file:/app/data/dev.db"
 
-# Initialize database and seed data
-RUN npm run db:init
+# Initialize database and import data from carga.txt
+RUN npm run db:init && npm run db:import
 
 # Build the application
 RUN npm run build

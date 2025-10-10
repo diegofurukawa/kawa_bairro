@@ -100,19 +100,12 @@ async function importCargaData() {
       // Criar unidades
       for (const unidadeData of quadraData.unidades) {
         try {
-          // Gerar contatos fictícios baseados nos moradores
-          const contatos = unidadeData.moradores.map((_, index) => {
-            // Simular telefone
-            const telefone = `119${String(Math.floor(Math.random() * 100000000)).padStart(8, '0')}`
-            return telefone
-          })
-          
           await prisma.unidade.create({
             data: {
               unidade_numero: unidadeData.numero,
               quadra_id: quadra.quadra_id,
               mora: JSON.stringify(unidadeData.moradores),
-              contato: JSON.stringify(contatos)
+              contato: JSON.stringify([]) // Array vazio - sem contatos fictícios
             }
           })
           

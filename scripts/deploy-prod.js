@@ -17,7 +17,13 @@ async function deployProduction() {
       env: process.env
     });
     
-    console.log('✅ Banco PostgreSQL configurado com sucesso!');
+    console.log('🔄 Importando dados do arquivo carga.txt...');
+    execSync('npm run db:import', { 
+      stdio: 'inherit',
+      env: process.env
+    });
+    
+    console.log('✅ Banco PostgreSQL configurado e dados importados com sucesso!');
     
   } catch (error) {
     console.error('❌ Erro ao configurar PostgreSQL:', error.message);

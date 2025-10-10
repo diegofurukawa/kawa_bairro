@@ -13,7 +13,13 @@ async function deployDatabase() {
       env: { ...process.env, DATABASE_URL: 'file:./dev.db' }
     });
     
-    console.log('✅ Banco de dados configurado com sucesso!');
+    console.log('🔄 Importando dados do arquivo carga.txt...');
+    execSync('npm run db:import', { 
+      stdio: 'inherit',
+      env: { ...process.env, DATABASE_URL: 'file:./dev.db' }
+    });
+    
+    console.log('✅ Banco de dados configurado e dados importados com sucesso!');
     
   } catch (error) {
     console.error('❌ Erro ao configurar banco:', error.message);
