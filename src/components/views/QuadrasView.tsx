@@ -19,7 +19,8 @@ export interface QuadrasViewProps {
 
 export function QuadrasView({ quadras, unidades }: QuadrasViewProps) {
   const [searchTerm, setSearchTerm] = React.useState('')
-  const [selectedQuadra, setSelectedQuadra] = React.useState<string>('all')
+  const [selectedQuadras, setSelectedQuadras] = React.useState<string[]>([])
+  const [dropdownValue, setDropdownValue] = React.useState<string>('all')
   const [viewMode, setViewMode] = React.useState<'grid' | 'list'>('grid')
   const [selectedUnidade, setSelectedUnidade] = React.useState<Unidade | null>(null)
   const [isModalOpen, setIsModalOpen] = React.useState(false)
@@ -43,6 +44,27 @@ export function QuadrasView({ quadras, unidades }: QuadrasViewProps) {
     }
   }, [isMobile])
 
+  // Funções para gerenciar seleção múltipla de quadras
+  const toggleQuadra = (quadraName: string) => {
+    setSelectedQuadras(prev => {
+      if (prev.includes(quadraName)) {
+        return prev.filter(name => name !== quadraName)
+      } else {
+        return [...prev, quadraName]
+      }
+    })
+  }
+
+  const removeQuadra = (quadraName: string) => {
+    setSelectedQuadras(prev => prev.filter(name => name !== quadraName))
+  }
+
+  const clearAllFilters = () => {
+    setSearchTerm('')
+    setSelectedQuadras([])
+    setDropdownValue('all')
+  }
+
   // Filtrar unidades baseado na pesquisa e filtros
   const filteredUnidades = React.useMemo(() => {
     return unidades.filter(unidade => {
@@ -60,12 +82,12 @@ export function QuadrasView({ quadras, unidades }: QuadrasViewProps) {
           contato.toLowerCase().includes(searchTerm.toLowerCase())
         )
 
-      const matchesQuadra = selectedQuadra === 'all' || 
-        unidade.quadra?.quadra_name === selectedQuadra
+      const matchesQuadra = selectedQuadras.length === 0 || 
+        selectedQuadras.includes(unidade.quadra?.quadra_name || '')
 
       return matchesSearch && matchesQuadra
     })
-  }, [unidades, searchTerm, selectedQuadra])
+  }, [unidades, searchTerm, selectedQuadras])
 
   // Agrupar unidades por quadra
   const unidadesPorQuadra = React.useMemo(() => {
@@ -200,11 +222,21 @@ export function QuadrasView({ quadras, unidades }: QuadrasViewProps) {
             </div>
           </div>
 
-          {/* Filtro de Quadra */}
+          {/* Filtro de Quadras - Dropdown */}
           <div className="w-full lg:w-64">
-            <Select value={selectedQuadra} onValueChange={setSelectedQuadra}>
+            <Select 
+              value={dropdownValue}
+              onValueChange={(value) => {
+                setDropdownValue(value)
+                if (value === 'all') {
+                  setSelectedQuadras([])
+                } else {
+                  toggleQuadra(value)
+                }
+              }}
+            >
               <SelectTrigger>
-                <SelectValue placeholder="Todas as quadras" />
+                <SelectValue placeholder="Selecionar quadras" />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">Todas as quadras</SelectItem>
@@ -220,10 +252,7 @@ export function QuadrasView({ quadras, unidades }: QuadrasViewProps) {
           {/* Botão Remover Filtros */}
           <Button
             variant="outline"
-            onClick={() => {
-              setSearchTerm('')
-              setSelectedQuadra('all')
-            }}
+            onClick={clearAllFilters}
             className="gap-2"
           >
             <X className="h-4 w-4" />
@@ -232,6 +261,35 @@ export function QuadrasView({ quadras, unidades }: QuadrasViewProps) {
         </div>
       </div>
 
+      {/* Chips das Quadras Selecionadas */}
+      {selectedQuadras.length > 0 && (
+        <div className="bg-white rounded-lg shadow-sm border p-4">
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="text-sm font-medium text-gray-700">
+              Quadras selecionadas ({selectedQuadras.length}):
+            </span>
+            {selectedQuadras.map(quadraName => (
+              <Chip
+                key={quadraName}
+                variant="default"
+                size="sm"
+                onRemove={() => removeQuadra(quadraName)}
+                className="bg-blue-100 text-blue-800 hover:bg-blue-200 border-blue-200"
+              >
+                {quadraName}
+              </Chip>
+            ))}
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={clearAllFilters}
+              className="text-gray-500 hover:text-gray-700 ml-2"
+            >
+              Limpar todas
+            </Button>
+          </div>
+        </div>
+      )}
 
       {/* Controles de visualização e resultados */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
