@@ -5,6 +5,9 @@ const nextConfig = {
     domains: [],
   },
   output: 'standalone',
+  devIndicators: {
+    buildActivity: false,
+  },
 }
 
 module.exports = nextConfig

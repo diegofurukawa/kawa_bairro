@@ -155,7 +155,11 @@ export function UnidadeForm({ quadras, className, onQuadraCreated }: UnidadeForm
       })
       
       success('Unidade cadastrada com sucesso!', 'A unidade foi adicionada ao sistema.')
-      router.refresh()
+      
+      // Redirecionar para a HomePage após 1 segundo
+      setTimeout(() => {
+        router.push('/')
+      }, 1000)
       
     } catch (err) {
       console.error('Erro ao cadastrar unidade:', err)

@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import { Navigation } from '@/components/layout/Navigation'
+import { Footer } from '@/components/layout/Footer'
 import { ToastProvider } from '@/components/ui/toast-provider'
 import './globals.css'
 
@@ -27,11 +28,12 @@ export default function RootLayout({
     <html lang="pt-BR">
       <body className={inter.className}>
         <ToastProvider>
-          <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
+          <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex flex-col">
             <Navigation />
-            <div className="container mx-auto px-4 py-8">
+            <div className="container mx-auto px-4 py-8 flex-1">
               {children}
             </div>
+            <Footer />
           </div>
         </ToastProvider>
       </body>
