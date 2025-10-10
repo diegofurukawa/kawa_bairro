@@ -76,6 +76,7 @@ export class UnidadeService {
     const updateData: any = {}
     
     if (data.unidade_numero) updateData.unidade_numero = data.unidade_numero
+    if (data.quadra_id) updateData.quadra_id = data.quadra_id
     if (data.mora) updateData.mora = JSON.stringify(data.mora)
     if (data.contato !== undefined) {
       updateData.contato = data.contato ? JSON.stringify(data.contato) : null

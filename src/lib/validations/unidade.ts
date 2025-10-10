@@ -27,6 +27,11 @@ export const UpdateUnidadeSchema = z.object({
     .max(20, 'Número da unidade deve ter no máximo 20 caracteres')
     .transform((val) => val.trim())
     .optional(),
+  quadra_id: z
+    .number()
+    .int('ID da quadra deve ser um número inteiro')
+    .positive('ID da quadra deve ser positivo')
+    .optional(),
   mora: z
     .array(z.string().min(1, 'Nome do morador não pode estar vazio'))
     .min(1, 'Deve ter pelo menos um morador')
@@ -34,7 +39,6 @@ export const UpdateUnidadeSchema = z.object({
     .optional(),
   contato: z
     .array(z.string().min(1, 'Contato não pode estar vazio'))
-    .min(1, 'Deve ter pelo menos um contato')
     .max(5, 'Máximo de 5 contatos por unidade')
     .optional(),
 })
