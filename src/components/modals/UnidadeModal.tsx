@@ -1,7 +1,7 @@
 'use client'
 
 import * as React from 'react'
-import { X, Edit, Eye, Save, Users, Phone, MapPin, Home } from 'lucide-react'
+import { X, Edit, Eye, Save, Users, Phone, MapPin, Home, MessageCircle } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -9,6 +9,7 @@ import { ChipInput } from '@/components/forms/ChipInput'
 import { QuadraSelect } from '@/components/forms/QuadraSelect'
 import { cn } from '@/lib/utils'
 import { parseJsonArray } from '@/lib/utils/data'
+import { analyzeContact, openWhatsApp } from '@/lib/utils/phone'
 import type { Unidade, Quadra } from '@/types'
 
 export interface UnidadeModalProps {
@@ -262,24 +263,59 @@ export function UnidadeModal({
             )}
           </div>
 
-          {/* Contatos */}
+          {/* Contatos em Lista */}
           <div className="space-y-2">
             <Label className="flex items-center gap-2">
-              <Phone className="h-4 w-4" />
+              <Phone className="h-4 w-4 text-orange-600" />
               Contatos (opcional) ({formData.contato.length})
             </Label>
             {mode === 'view' ? (
               <div className="p-3 bg-gray-50 rounded-md">
                 {formData.contato.length > 0 ? (
-                  <div className="flex flex-wrap gap-2">
-                    {formData.contato.map((contato, index) => (
-                      <span
-                        key={index}
-                        className="px-2 py-1 bg-green-100 text-green-800 rounded-full text-sm"
-                      >
-                        {contato}
-                      </span>
-                    ))}
+                  <div className="space-y-2">
+                    {formData.contato.map((contato, index) => {
+                      const contactInfo = analyzeContact(contato)
+                      return (
+                        <div key={index} className="flex items-center justify-between p-2 bg-white rounded-lg border hover:bg-gray-50 transition-colors">
+                          <div className="flex items-center gap-2 min-w-0 flex-1">
+                            <Phone className="h-3 w-3 text-orange-500 flex-shrink-0" />
+                            <span className="text-sm font-medium text-gray-900 truncate">
+                              {contactInfo.formatted}
+                            </span>
+                          </div>
+                          
+                          <div className="flex items-center gap-1 flex-shrink-0">
+                            {contactInfo.isPhone && (
+                              <>
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  className="h-7 w-7 p-0 text-green-600 hover:text-green-700 hover:bg-green-50"
+                                  onClick={() => openWhatsApp(contato)}
+                                  title="Abrir no WhatsApp"
+                                >
+                                  <MessageCircle className="h-3 w-3" />
+                                </Button>
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  className="h-7 w-7 p-0 text-blue-600 hover:text-blue-700 hover:bg-blue-50"
+                                  onClick={() => window.open(`tel:${contactInfo.cleanNumber}`, '_self')}
+                                  title="Ligar"
+                                >
+                                  <Phone className="h-3 w-3" />
+                                </Button>
+                              </>
+                            )}
+                            {!contactInfo.isPhone && (
+                              <span className="text-xs text-gray-500 px-2 py-1 bg-gray-200 rounded">
+                                Email
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                      )
+                    })}
                   </div>
                 ) : (
                   <span className="text-gray-500">Nenhum contato cadastrado</span>

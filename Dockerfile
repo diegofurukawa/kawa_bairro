@@ -56,5 +56,19 @@ ENV DATABASE_URL=${DATABASE_URL}
 # Expose the external port
 EXPOSE ${EXTERNAL_PORT}
 
-# Start the application with database migration (not import)
-CMD ["sh", "-c", "echo '🚀 Starting...' && npx prisma db push && node scripts/migrate-db.js && yarn start"]
+# Create startup script for migrations
+RUN echo '#!/bin/sh' > /app/start.sh && \
+    echo 'echo "🚀 Starting application..."' >> /app/start.sh && \
+    echo 'echo "🔄 Running database migrations..."' >> /app/start.sh && \
+    echo 'npx prisma generate' >> /app/start.sh && \
+    echo 'npx prisma db push --accept-data-loss' >> /app/start.sh && \
+    echo 'echo "✅ Database migrations completed!"' >> /app/start.sh && \
+    echo 'echo "🔄 Running custom migrations..."' >> /app/start.sh && \
+    echo 'node scripts/migrate-db.js' >> /app/start.sh && \
+    echo 'echo "✅ Custom migrations completed!"' >> /app/start.sh && \
+    echo 'echo "🚀 Starting application server..."' >> /app/start.sh && \
+    echo 'yarn start' >> /app/start.sh && \
+    chmod +x /app/start.sh
+
+# Start the application with automatic migrations
+CMD ["/app/start.sh"]

@@ -1,9 +1,10 @@
 import * as React from 'react'
-import { Home, Users, Phone, Calendar, Edit, Eye } from 'lucide-react'
+import { Home, Users, Phone, Calendar, Edit, Eye, MessageCircle } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Chip } from '@/components/ui/chip'
 import { cn } from '@/lib/utils'
 import { parseJsonArray } from '@/lib/utils/data'
+import { analyzeContact, openWhatsApp } from '@/lib/utils/phone'
 import type { Unidade } from '@/types'
 
 export interface UnidadeCardProps {
@@ -46,32 +47,73 @@ export function UnidadeCard({ unidade, className, variant = 'grid', onEdit, onVi
             </div>
           </div>
 
-          {/* Moradores e contatos compactos */}
+          {/* Moradores e contatos compactos com ícones */}
           <div className="flex flex-wrap gap-2">
-            {moradores.slice(0, 2).map((morador, index) => (
-              <Chip key={index} variant="secondary" size="sm">
-                {morador}
-              </Chip>
-            ))}
-            {moradores.length > 2 && (
-              <Chip variant="secondary" size="sm">
-                +{moradores.length - 2}
-              </Chip>
+            {/* Moradores com ícone */}
+            {moradores.length > 0 && (
+              <div className="flex items-center gap-1">
+                <Users className="h-3 w-3 text-green-600" />
+                <span className="text-xs text-gray-600">{moradores.length}</span>
+                {moradores.slice(0, 2).map((morador, index) => (
+                  <Chip key={index} variant="secondary" size="sm">
+                    {morador}
+                  </Chip>
+                ))}
+                {moradores.length > 2 && (
+                  <Chip variant="secondary" size="sm">
+                    +{moradores.length - 2}
+                  </Chip>
+                )}
+              </div>
             )}
-            {contatos.slice(0, 1).map((contato, index) => (
-              <Chip key={index} variant="default" size="sm">
-                {contato}
-              </Chip>
-            ))}
-            {contatos.length > 1 && (
-              <Chip variant="default" size="sm">
-                +{contatos.length - 1}
-              </Chip>
+            
+            {/* Contatos compactos no modo lista */}
+            {contatos.length > 0 && (
+              <div className="flex items-center gap-1">
+                <Phone className="h-3 w-3 text-orange-600" />
+                <span className="text-xs text-gray-600">{contatos.length}</span>
+                {contatos.slice(0, 1).map((contato, index) => {
+                  const contactInfo = analyzeContact(contato)
+                  return (
+                    <div key={index} className="flex items-center gap-1">
+                      <div
+                        className={contactInfo.isPhone ? "cursor-pointer" : ""}
+                        onClick={contactInfo.isPhone ? () => openWhatsApp(contato) : undefined}
+                        title={contactInfo.isPhone ? "Clique para abrir no WhatsApp" : ""}
+                      >
+                        <Chip 
+                          variant="default" 
+                          size="sm"
+                          className={contactInfo.isPhone ? "hover:bg-green-100" : ""}
+                        >
+                          {contactInfo.formatted}
+                        </Chip>
+                      </div>
+                      {contactInfo.isPhone && (
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="h-5 w-5 p-0 text-green-600 hover:text-green-700"
+                          onClick={() => openWhatsApp(contato)}
+                          title="Abrir no WhatsApp"
+                        >
+                          <MessageCircle className="h-3 w-3" />
+                        </Button>
+                      )}
+                    </div>
+                  )
+                })}
+                {contatos.length > 1 && (
+                  <Chip variant="default" size="sm">
+                    +{contatos.length - 1}
+                  </Chip>
+                )}
+              </div>
             )}
           </div>
 
-          {/* Data */}
-          <div className="text-xs text-gray-500 flex-shrink-0">
+          {/* Data - Oculto em mobile */}
+          <div className="text-xs text-gray-500 flex-shrink-0 hidden sm:block">
             {new Date(unidade.createdAt).toLocaleDateString('pt-BR')}
           </div>
 
@@ -82,7 +124,7 @@ export function UnidadeCard({ unidade, className, variant = 'grid', onEdit, onVi
                 variant="ghost"
                 size="sm"
                 onClick={() => onView(unidade)}
-                className="h-7 w-7 p-0"
+                className="h-7 w-7 p-0 text-blue-600 hover:text-blue-700 hover:bg-blue-50"
                 title="Visualizar"
               >
                 <Eye className="h-3 w-3" />
@@ -93,7 +135,7 @@ export function UnidadeCard({ unidade, className, variant = 'grid', onEdit, onVi
                 variant="ghost"
                 size="sm"
                 onClick={() => onEdit(unidade)}
-                className="h-7 w-7 p-0"
+                className="h-7 w-7 p-0 text-purple-600 hover:text-purple-700 hover:bg-purple-50"
                 title="Editar"
               >
                 <Edit className="h-3 w-3" />
@@ -155,7 +197,7 @@ export function UnidadeCard({ unidade, className, variant = 'grid', onEdit, onVi
         </div>
       )}
 
-      {/* Contatos */}
+      {/* Contatos em Lista */}
       {contatos.length > 0 && (
         <div className="mb-3">
           <div className="flex items-center gap-2 mb-2">
@@ -164,17 +206,50 @@ export function UnidadeCard({ unidade, className, variant = 'grid', onEdit, onVi
               Contatos ({contatos.length})
             </span>
           </div>
-          <div className="flex flex-wrap gap-1">
-            {contatos.slice(0, 2).map((contato, index) => (
-              <Chip key={index} variant="default" size="sm">
-                {contato}
-              </Chip>
-            ))}
-            {contatos.length > 2 && (
-              <Chip variant="default" size="sm">
-                +{contatos.length - 2} mais
-              </Chip>
-            )}
+          <div className="space-y-2">
+            {contatos.map((contato, index) => {
+              const contactInfo = analyzeContact(contato)
+              return (
+                <div key={index} className="flex items-center justify-between p-2 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
+                  <div className="flex items-center gap-2 min-w-0 flex-1">
+                    <Phone className="h-3 w-3 text-orange-500 flex-shrink-0" />
+                    <span className="text-sm font-medium text-gray-900 truncate">
+                      {contactInfo.formatted}
+                    </span>
+                  </div>
+                  
+                  <div className="flex items-center gap-1 flex-shrink-0">
+                    {contactInfo.isPhone && (
+                      <>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="h-7 w-7 p-0 text-green-600 hover:text-green-700 hover:bg-green-50"
+                          onClick={() => openWhatsApp(contato)}
+                          title="Abrir no WhatsApp"
+                        >
+                          <MessageCircle className="h-3 w-3" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="h-7 w-7 p-0 text-blue-600 hover:text-blue-700 hover:bg-blue-50"
+                          onClick={() => window.open(`tel:${contactInfo.cleanNumber}`, '_self')}
+                          title="Ligar"
+                        >
+                          <Phone className="h-3 w-3" />
+                        </Button>
+                      </>
+                    )}
+                    {!contactInfo.isPhone && (
+                      <span className="text-xs text-gray-500 px-2 py-1 bg-gray-200 rounded">
+                        Email
+                      </span>
+                    )}
+                  </div>
+                </div>
+              )
+            })}
           </div>
         </div>
       )}
@@ -209,7 +284,7 @@ export function UnidadeCard({ unidade, className, variant = 'grid', onEdit, onVi
                 variant="ghost"
                 size="sm"
                 onClick={() => onView(unidade)}
-                className="h-7 w-7 p-0"
+                className="h-7 w-7 p-0 text-blue-600 hover:text-blue-700 hover:bg-blue-50"
                 title="Visualizar"
               >
                 <Eye className="h-3 w-3" />
@@ -220,7 +295,7 @@ export function UnidadeCard({ unidade, className, variant = 'grid', onEdit, onVi
                 variant="ghost"
                 size="sm"
                 onClick={() => onEdit(unidade)}
-                className="h-7 w-7 p-0"
+                className="h-7 w-7 p-0 text-purple-600 hover:text-purple-700 hover:bg-purple-50"
                 title="Editar"
               >
                 <Edit className="h-3 w-3" />

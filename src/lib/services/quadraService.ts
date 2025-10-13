@@ -32,7 +32,17 @@ export class QuadraService {
   static async create(data: CreateQuadraInput): Promise<Quadra> {
     return await prisma.quadra.create({
       data: {
-        quadra_name: data.quadra_name
+        quadra_name: data.quadra_name,
+        cep: data.cep || null,
+        numero: data.numero || null,
+        endereco: data.endereco || null,
+        complemento: data.complemento || null,
+        bairro: data.bairro || null,
+        cidade: data.cidade || null,
+        estado: data.estado || null,
+        estado_codigo: data.estado_codigo || null,
+        pais: data.pais || null,
+        pais_iso: data.pais_iso || null,
       }
     })
   }
@@ -41,7 +51,17 @@ export class QuadraService {
     return await prisma.quadra.update({
       where: { quadra_id: id },
       data: {
-        ...(data.quadra_name && { quadra_name: data.quadra_name })
+        ...(data.quadra_name && { quadra_name: data.quadra_name }),
+        ...(data.cep !== undefined && { cep: data.cep || null }),
+        ...(data.numero !== undefined && { numero: data.numero || null }),
+        ...(data.endereco !== undefined && { endereco: data.endereco || null }),
+        ...(data.complemento !== undefined && { complemento: data.complemento || null }),
+        ...(data.bairro !== undefined && { bairro: data.bairro || null }),
+        ...(data.cidade !== undefined && { cidade: data.cidade || null }),
+        ...(data.estado !== undefined && { estado: data.estado || null }),
+        ...(data.estado_codigo !== undefined && { estado_codigo: data.estado_codigo || null }),
+        ...(data.pais !== undefined && { pais: data.pais || null }),
+        ...(data.pais_iso !== undefined && { pais_iso: data.pais_iso || null }),
       }
     })
   }

@@ -17,6 +17,7 @@ export interface QuadraSelectProps {
   label?: string
   error?: string
   onQuadraCreated?: () => void
+  showAddress?: boolean
 }
 
 export function QuadraSelect({
@@ -27,7 +28,8 @@ export function QuadraSelect({
   className,
   label,
   error,
-  onQuadraCreated
+  onQuadraCreated,
+  showAddress = false
 }: QuadraSelectProps) {
   const [isCreatingNew, setIsCreatingNew] = React.useState(false)
   const [newQuadraName, setNewQuadraName] = React.useState('')
@@ -78,7 +80,15 @@ export function QuadraSelect({
           <SelectContent>
             {quadras.map((quadra) => (
               <SelectItem key={quadra.quadra_id} value={quadra.quadra_name}>
-                {quadra.quadra_name}
+                <div className="flex flex-col">
+                  <span>{quadra.quadra_name}</span>
+                  {showAddress && quadra.cidade && (
+                    <span className="text-xs text-muted-foreground">
+                      {quadra.cidade}
+                      {quadra.bairro && ` - ${quadra.bairro}`}
+                    </span>
+                  )}
+                </div>
               </SelectItem>
             ))}
             <SelectItem value="new" className="text-primary">

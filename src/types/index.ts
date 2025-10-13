@@ -1,6 +1,16 @@
 export interface Quadra {
   quadra_id: number
   quadra_name: string
+  cep?: string | null
+  numero?: string | null
+  endereco?: string | null
+  complemento?: string | null
+  bairro?: string | null
+  cidade?: string | null
+  estado?: string | null
+  estado_codigo?: string | null
+  pais?: string | null
+  pais_iso?: string | null
   createdAt: Date
   updatedAt: Date
 }
@@ -18,6 +28,30 @@ export interface Unidade {
 
 export interface CreateQuadraInput {
   quadra_name: string
+  cep?: string
+  numero?: string
+  endereco?: string
+  complemento?: string
+  bairro?: string
+  cidade?: string
+  estado?: string
+  estado_codigo?: string
+  pais?: string
+  pais_iso?: string
+}
+
+export interface UpdateQuadraInput {
+  quadra_name?: string
+  cep?: string
+  numero?: string
+  endereco?: string
+  complemento?: string
+  bairro?: string
+  cidade?: string
+  estado?: string
+  estado_codigo?: string
+  pais?: string
+  pais_iso?: string
 }
 
 export interface CreateUnidadeInput {
