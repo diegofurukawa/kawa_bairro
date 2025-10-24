@@ -52,24 +52,24 @@ export default async function HomePage() {
   return (
     <div className="max-w-7xl mx-auto space-y-6">
       <div className="text-center space-y-4">
-        <h1 className="text-3xl font-bold text-gray-900">
+        <h1 className="text-3xl font-bold text-olive-800">
           Quadras e Unidades
         </h1>
-        <p className="text-gray-600">
+        <p className="text-olive-700">
           Visualize todas as quadras e unidades cadastradas no bairro
         </p>
-        
-        
+
+
         {/* Navigation Buttons */}
         <div className="flex flex-row gap-4 justify-center items-center">
           <Link href="/">
-            <Button variant="default" className="gap-2">
+            <Button variant="default" className="gap-2 bg-olive-600 hover:bg-olive-700 text-white">
               <MapPin className="h-4 w-4" />
               Quadras
             </Button>
           </Link>
           <Link href="/cadastrar">
-            <Button variant="secondary" className="gap-2">
+            <Button variant="secondary" className="gap-2 bg-purple-brand-500 hover:bg-purple-brand-600 text-white">
               <Plus className="h-4 w-4" />
               Cadastrar
             </Button>

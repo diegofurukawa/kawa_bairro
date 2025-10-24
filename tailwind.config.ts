@@ -42,6 +42,31 @@ const config: Config = {
           DEFAULT: 'hsl(var(--card))',
           foreground: 'hsl(var(--card-foreground))',
         },
+        // Brand colors
+        olive: {
+          50: '#f7f8f4',
+          100: '#eef0e8',
+          200: '#dce1d1',
+          300: '#c1caa9',
+          400: '#a7b484',
+          500: '#87925b', // Main brand color from logo
+          600: '#6d7749',
+          700: '#565d3b',
+          800: '#474d32',
+          900: '#3c412b',
+        },
+        'purple-brand': {
+          50: '#f5f3fb',
+          100: '#ebe7f7',
+          200: '#d9d2f0',
+          300: '#bdb0e4',
+          400: '#9d86d6',
+          500: '#6546b8', // Main purple brand color
+          600: '#5a3ca3',
+          700: '#4d3387',
+          800: '#412c71',
+          900: '#36275d',
+        },
       },
       borderRadius: {
         lg: 'var(--radius)',

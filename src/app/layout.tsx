@@ -28,7 +28,7 @@ export default function RootLayout({
     <html lang="pt-BR">
       <body className={inter.className}>
         <ToastProvider>
-          <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex flex-col">
+          <div className="min-h-screen bg-gradient-to-br from-olive-50 via-purple-brand-50 to-olive-100 flex flex-col">
             <Navigation />
             <div className="container mx-auto px-4 py-8 flex-1">
               {children}

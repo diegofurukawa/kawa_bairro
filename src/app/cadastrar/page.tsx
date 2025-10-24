@@ -35,16 +35,16 @@ export default async function CadastrarPage() {
       {/* Header */}
       <div className="text-center space-y-4">
         <div className="flex items-center justify-center gap-3">
-          <Home className="h-8 w-8 text-primary" />
-          <h1 className="text-4xl font-bold text-gray-900">
+          <Home className="h-8 w-8 text-olive-600" />
+          <h1 className="text-4xl font-bold text-olive-800">
             MeuBairro
           </h1>
         </div>
-        <p className="text-xl text-gray-600">
+        <p className="text-xl text-purple-brand-700 font-semibold">
           Jardim das Oliveiras
         </p>
-        <p className="text-gray-500 max-w-2xl mx-auto">
-          Cadastre sua unidade e conecte-se com seus vizinhos. 
+        <p className="text-olive-700 max-w-2xl mx-auto">
+          Cadastre sua unidade e conecte-se com seus vizinhos.
           Mantenha-se informado sobre o que acontece no seu bairro.
         </p>
       </div>
@@ -52,13 +52,13 @@ export default async function CadastrarPage() {
       {/* Navigation Buttons */}
       <div className="flex flex-row gap-4 justify-center items-center">
         <Link href="/">
-          <Button variant="outline" className="gap-2">
+          <Button variant="outline" className="gap-2 border-olive-400 text-olive-700 hover:bg-olive-50">
             <MapPin className="h-4 w-4" />
             Quadras
           </Button>
         </Link>
         <Link href="/cadastrar">
-          <Button variant="default" className="gap-2">
+          <Button variant="default" className="gap-2 bg-purple-brand-600 hover:bg-purple-brand-700 text-white">
             <Plus className="h-4 w-4" />
             Cadastrar
           </Button>
@@ -91,32 +91,32 @@ export default async function CadastrarPage() {
 
       {/* Stats - Moved after the "Ver todas as quadras" button */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div className="bg-white rounded-lg p-6 shadow-sm border">
+        <div className="bg-white rounded-lg p-6 shadow-sm border border-olive-200 hover:shadow-md transition-shadow">
           <div className="flex items-center gap-3">
-            <MapPin className="h-6 w-6 text-blue-600" />
+            <MapPin className="h-6 w-6 text-olive-600" />
             <div>
-              <p className="text-2xl font-bold text-gray-900">{quadras.length}</p>
-              <p className="text-sm text-gray-600">Quadras</p>
+              <p className="text-2xl font-bold text-olive-800">{quadras.length}</p>
+              <p className="text-sm text-olive-600">Quadras</p>
             </div>
           </div>
         </div>
-        
-        <div className="bg-white rounded-lg p-6 shadow-sm border">
+
+        <div className="bg-white rounded-lg p-6 shadow-sm border border-purple-brand-200 hover:shadow-md transition-shadow">
           <div className="flex items-center gap-3">
-            <Home className="h-6 w-6 text-green-600" />
+            <Home className="h-6 w-6 text-purple-brand-600" />
             <div>
-              <p className="text-2xl font-bold text-gray-900">{unidades.length}</p>
-              <p className="text-sm text-gray-600">Unidades</p>
+              <p className="text-2xl font-bold text-purple-brand-800">{unidades.length}</p>
+              <p className="text-sm text-purple-brand-600">Unidades</p>
             </div>
           </div>
         </div>
-        
-        <div className="bg-white rounded-lg p-6 shadow-sm border">
+
+        <div className="bg-white rounded-lg p-6 shadow-sm border border-olive-200 hover:shadow-md transition-shadow">
           <div className="flex items-center gap-3">
-            <Users className="h-6 w-6 text-purple-600" />
+            <Users className="h-6 w-6 text-olive-600" />
             <div>
-              <p className="text-2xl font-bold text-gray-900">{totalMoradores}</p>
-              <p className="text-sm text-gray-600">Moradores</p>
+              <p className="text-2xl font-bold text-olive-800">{totalMoradores}</p>
+              <p className="text-sm text-olive-600">Moradores</p>
             </div>
           </div>
         </div>
