@@ -184,7 +184,7 @@ export function QuadrasView({ quadras, unidades }: QuadrasViewProps) {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           <div className="bg-white rounded-lg p-4 shadow-sm border">
             <div className="flex items-center gap-3">
-              <MapPin className="h-5 w-5 text-blue-600" />
+              <MapPin className="h-5 w-5 text-purple-brand-600" />
               <div>
                 <p className="text-xl font-bold text-gray-900">{Object.keys(unidadesPorQuadra).length}</p>
                 <p className="text-sm text-gray-600">Quadras</p>
@@ -292,7 +292,7 @@ export function QuadrasView({ quadras, unidades }: QuadrasViewProps) {
                 variant="default"
                 size="sm"
                 onRemove={() => removeQuadra(quadraName)}
-                className="bg-blue-100 text-blue-800 hover:bg-blue-200 border-blue-200"
+                className="bg-purple-brand-100 text-purple-brand-800 hover:bg-purple-brand-200 border-purple-brand-200"
               >
                 {quadraName}
               </Chip>
@@ -361,9 +361,9 @@ export function QuadrasView({ quadras, unidades }: QuadrasViewProps) {
           Object.entries(unidadesPorQuadra).map(([quadraName, unidadesDaQuadra]) => (
             <div key={quadraName} className="space-y-4">
               {/* Header da Quadra */}
-              <div className="flex flex-col sm:flex-row sm:items-center gap-3 p-4 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg border">
+              <div className="flex flex-col sm:flex-row sm:items-center gap-3 p-4 bg-gradient-to-r from-purple-brand-50/70 to-purple-brand-100/50 rounded-lg border border-purple-brand-200">
                 <div className="flex items-center gap-3">
-                  <MapPin className="h-5 w-5 text-blue-600" />
+                  <MapPin className="h-5 w-5 text-purple-brand-600" />
                   <h2 className="text-xl font-semibold text-gray-900">
                     {quadraName}
                   </h2>
