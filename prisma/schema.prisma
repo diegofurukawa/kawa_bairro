@@ -33,6 +33,7 @@ model Unidade {
   quadra_id      Int
   mora           String?
   contato        String?
+  vistoria       String?
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
   quadra         Quadra   @relation(fields: [quadra_id], references: [quadra_id], onDelete: Cascade)

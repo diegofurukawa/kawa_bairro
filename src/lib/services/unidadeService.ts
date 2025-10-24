@@ -72,7 +72,8 @@ export class UnidadeService {
         unidade_numero: data.unidade_numero,
         quadra_id: data.quadra_id,
         mora: JSON.stringify(data.mora),
-        contato: data.contato ? JSON.stringify(data.contato) : null
+        contato: data.contato ? JSON.stringify(data.contato) : null,
+        vistoria: data.vistoria || null
       },
       include: {
         quadra: true
@@ -83,12 +84,15 @@ export class UnidadeService {
 
   static async update(id: number, data: UpdateUnidadeInput): Promise<Unidade> {
     const updateData: any = {}
-    
+
     if (data.unidade_numero) updateData.unidade_numero = data.unidade_numero
     if (data.quadra_id) updateData.quadra_id = data.quadra_id
     if (data.mora) updateData.mora = JSON.stringify(data.mora)
     if (data.contato !== undefined) {
       updateData.contato = data.contato ? JSON.stringify(data.contato) : null
+    }
+    if (data.vistoria !== undefined) {
+      updateData.vistoria = data.vistoria
     }
 
     const unidade = await prisma.unidade.update({

@@ -22,6 +22,7 @@ export interface FormData {
   quadra_name: string
   mora: string[]
   contato: string[]
+  vistoria: 'agendado' | 'realizado' | 'remarcado' | 'pendente' | null
 }
 
 export interface FormErrors {
@@ -29,6 +30,7 @@ export interface FormErrors {
   quadra_name?: string
   mora?: string
   contato?: string
+  vistoria?: string
 }
 
 export function UnidadeForm({ quadras, className, onQuadraCreated }: UnidadeFormProps) {
@@ -41,15 +43,16 @@ export function UnidadeForm({ quadras, className, onQuadraCreated }: UnidadeForm
     unidade_numero: '',
     quadra_name: '',
     mora: [],
-    contato: []
+    contato: [],
+    vistoria: null
   })
 
-  const handleInputChange = (field: keyof FormData, value: string | string[]) => {
-    // Converter para maiúscula se for string
-    const processedValue = typeof value === 'string' 
-      ? value.toUpperCase() 
+  const handleInputChange = (field: keyof FormData, value: string | string[] | null) => {
+    // Converter para maiúscula se for string (exceto para vistoria)
+    const processedValue = typeof value === 'string' && field !== 'vistoria'
+      ? value.toUpperCase()
       : value
-    
+
     setFormData(prev => ({ ...prev, [field]: processedValue }))
     // Limpar erro do campo quando usuário começar a digitar
     if (errors[field]) {
@@ -132,7 +135,8 @@ export function UnidadeForm({ quadras, className, onQuadraCreated }: UnidadeForm
           unidade_numero: formData.unidade_numero,
           quadra_id: quadraData.data.quadra_id,
           mora: formData.mora,
-          contato: formData.contato
+          contato: formData.contato,
+          vistoria: formData.vistoria
         })
       })
       
@@ -151,7 +155,8 @@ export function UnidadeForm({ quadras, className, onQuadraCreated }: UnidadeForm
         unidade_numero: '',
         quadra_name: '',
         mora: [],
-        contato: []
+        contato: [],
+        vistoria: null
       })
       
       success('Unidade cadastrada com sucesso!', 'A unidade foi adicionada ao sistema.')
@@ -258,6 +263,22 @@ export function UnidadeForm({ quadras, className, onQuadraCreated }: UnidadeForm
             maxItems={5}
             error={errors.contato}
           />
+
+          <div className="space-y-2">
+            <Label htmlFor="vistoria">Status da Vistoria (opcional)</Label>
+            <select
+              id="vistoria"
+              value={formData.vistoria || ''}
+              onChange={(e) => handleInputChange('vistoria', e.target.value || null)}
+              className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              <option value="">Selecione um status</option>
+              <option value="pendente">Pendente</option>
+              <option value="agendado">Agendado</option>
+              <option value="realizado">Realizado</option>
+              <option value="remarcado">Remarcado</option>
+            </select>
+          </div>
         </div>
       </div>
       
@@ -278,7 +299,8 @@ export function UnidadeForm({ quadras, className, onQuadraCreated }: UnidadeForm
               unidade_numero: '',
               quadra_name: '',
               mora: [],
-              contato: []
+              contato: [],
+              vistoria: null
             })
             setErrors({})
           }}

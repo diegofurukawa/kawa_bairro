@@ -1,5 +1,7 @@
 import { z } from 'zod'
 
+export const vistoriaStatusEnum = z.enum(['agendado', 'realizado', 'remarcado', 'pendente'])
+
 export const CreateUnidadeSchema = z.object({
   unidade_numero: z
     .string()
@@ -18,6 +20,7 @@ export const CreateUnidadeSchema = z.object({
     .array(z.string().min(1, 'Contato não pode estar vazio'))
     .max(5, 'Máximo de 5 contatos por unidade')
     .optional(),
+  vistoria: vistoriaStatusEnum.nullable().optional(),
 })
 
 export const UpdateUnidadeSchema = z.object({
@@ -41,6 +44,7 @@ export const UpdateUnidadeSchema = z.object({
     .array(z.string().min(1, 'Contato não pode estar vazio'))
     .max(5, 'Máximo de 5 contatos por unidade')
     .optional(),
+  vistoria: vistoriaStatusEnum.nullable().optional(),
 })
 
 export type CreateUnidadeInput = z.infer<typeof CreateUnidadeSchema>

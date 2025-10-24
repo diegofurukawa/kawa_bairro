@@ -1,16 +1,17 @@
 'use client'
 
 import * as React from 'react'
-import { X, Edit, Eye, Save, Users, Phone, MapPin, Home, MessageCircle } from 'lucide-react'
+import { X, Edit, Eye, Save, Users, Phone, MapPin, Home, MessageCircle, ClipboardCheck } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { ChipInput } from '@/components/forms/ChipInput'
 import { QuadraSelect } from '@/components/forms/QuadraSelect'
+import { VistoriaChip } from '@/components/ui/vistoria-chip'
 import { cn } from '@/lib/utils'
 import { parseJsonArray } from '@/lib/utils/data'
 import { analyzeContact, openWhatsApp } from '@/lib/utils/phone'
-import type { Unidade, Quadra } from '@/types'
+import type { Unidade, Quadra, VistoriaStatus } from '@/types'
 
 export interface UnidadeModalProps {
   unidade: Unidade | null
@@ -22,6 +23,7 @@ export interface UnidadeModalProps {
     quadra_id: number
     mora: string[]
     contato: string[]
+    vistoria: VistoriaStatus | null
   }) => Promise<void>
 }
 
@@ -30,6 +32,7 @@ export interface UnidadeModalErrors {
   quadra_name?: string
   mora?: string
   contato?: string
+  vistoria?: string
 }
 
 export function UnidadeModal({ 
@@ -46,7 +49,8 @@ export function UnidadeModal({
     unidade_numero: '',
     quadra_name: '',
     mora: [] as string[],
-    contato: [] as string[]
+    contato: [] as string[],
+    vistoria: null as VistoriaStatus | null
   })
 
   const [errors, setErrors] = React.useState<UnidadeModalErrors>({})
@@ -58,14 +62,15 @@ export function UnidadeModal({
         unidade_numero: unidade.unidade_numero,
         quadra_name: unidade.quadra?.quadra_name || '',
         mora: parseJsonArray(unidade.mora),
-        contato: parseJsonArray(unidade.contato)
+        contato: parseJsonArray(unidade.contato),
+        vistoria: unidade.vistoria
       })
       setMode('view')
       setErrors({})
     }
   }, [unidade])
 
-  const handleInputChange = (field: keyof typeof formData, value: string | string[]) => {
+  const handleInputChange = (field: keyof typeof formData, value: string | string[] | VistoriaStatus | null) => {
     setFormData(prev => ({ ...prev, [field]: value }))
     // Limpar erro do campo
     if (errors[field]) {
@@ -96,19 +101,20 @@ export function UnidadeModal({
 
   const handleSave = async () => {
     if (!validateForm() || !unidade) return
-    
+
     setIsLoading(true)
     try {
       const quadra = quadras.find(q => q.quadra_name === formData.quadra_name)
       if (!quadra) throw new Error('Quadra não encontrada')
-      
+
       await onSave({
         unidade_numero: formData.unidade_numero,
         quadra_id: quadra.quadra_id,
         mora: formData.mora,
-        contato: formData.contato
+        contato: formData.contato,
+        vistoria: formData.vistoria
       })
-      
+
       setMode('view')
     } catch (error) {
       console.error('Erro ao salvar:', error)
@@ -227,6 +233,32 @@ export function UnidadeModal({
                 />
               )}
             </div>
+          </div>
+
+          {/* Status da Vistoria */}
+          <div className="space-y-2">
+            <Label className="flex items-center gap-2">
+              <ClipboardCheck className="h-4 w-4 text-blue-600" />
+              Status da Vistoria
+            </Label>
+            {mode === 'view' ? (
+              <div className="p-3 bg-gray-50 rounded-md">
+                <VistoriaChip status={formData.vistoria} />
+              </div>
+            ) : (
+              <select
+                id="vistoria"
+                value={formData.vistoria || ''}
+                onChange={(e) => handleInputChange('vistoria', (e.target.value || null) as VistoriaStatus | null)}
+                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                <option value="">Selecione um status</option>
+                <option value="pendente">Pendente</option>
+                <option value="agendado">Agendado</option>
+                <option value="realizado">Realizado</option>
+                <option value="remarcado">Remarcado</option>
+              </select>
+            )}
           </div>
 
           {/* Moradores */}

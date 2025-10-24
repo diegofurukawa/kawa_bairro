@@ -156,6 +156,7 @@ export function QuadrasView({ quadras, unidades }: QuadrasViewProps) {
     quadra_id: number
     mora: string[]
     contato: string[]
+    vistoria: string | null
   }) => {
     try {
       const response = await fetch(`/api/unidades/${selectedUnidade?.unidade_id}`, {

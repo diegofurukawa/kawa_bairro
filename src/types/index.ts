@@ -15,12 +15,15 @@ export interface Quadra {
   updatedAt: Date
 }
 
+export type VistoriaStatus = 'agendado' | 'realizado' | 'remarcado' | 'pendente'
+
 export interface Unidade {
   unidade_id: number
   unidade_numero: string
   quadra_id: number
   mora: string[] | null
   contato: string[] | null
+  vistoria: VistoriaStatus | null
   quadra?: Quadra
   createdAt: Date
   updatedAt: Date
@@ -59,12 +62,14 @@ export interface CreateUnidadeInput {
   quadra_id: number
   mora: string[]
   contato: string[]
+  vistoria?: VistoriaStatus | null
 }
 
 export interface UpdateUnidadeInput {
   unidade_numero?: string
   mora?: string[]
   contato?: string[]
+  vistoria?: VistoriaStatus | null
 }
 
 export interface ApiResponse<T> {

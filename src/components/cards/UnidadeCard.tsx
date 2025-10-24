@@ -1,7 +1,8 @@
 import * as React from 'react'
-import { Home, Users, Phone, Calendar, Edit, Eye, MessageCircle } from 'lucide-react'
+import { Home, Users, Phone, Calendar, Edit, Eye, MessageCircle, ClipboardCheck } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Chip } from '@/components/ui/chip'
+import { VistoriaChip } from '@/components/ui/vistoria-chip'
 import { cn } from '@/lib/utils'
 import { parseJsonArray } from '@/lib/utils/data'
 import { analyzeContact, openWhatsApp } from '@/lib/utils/phone'
@@ -47,8 +48,14 @@ export function UnidadeCard({ unidade, className, variant = 'grid', onEdit, onVi
             </div>
           </div>
 
-          {/* Moradores e contatos compactos com ícones */}
+          {/* Moradores, contatos e vistoria compactos com ícones */}
           <div className="flex flex-wrap gap-2">
+            {/* Vistoria */}
+            <div className="flex items-center gap-1">
+              <ClipboardCheck className="h-3 w-3 text-blue-600" />
+              <VistoriaChip status={unidade.vistoria} size="sm" />
+            </div>
+
             {/* Moradores com ícone */}
             {moradores.length > 0 && (
               <div className="flex items-center gap-1">
@@ -171,6 +178,17 @@ export function UnidadeCard({ unidade, className, variant = 'grid', onEdit, onVi
         <span className="text-sm font-medium text-gray-900">
           {unidade.quadra?.quadra_name || 'Não informada'}
         </span>
+      </div>
+
+      {/* Vistoria */}
+      <div className="mb-3">
+        <div className="flex items-center gap-2 mb-2">
+          <ClipboardCheck className="h-4 w-4 text-blue-600" />
+          <span className="text-sm font-medium text-gray-700">
+            Status da Vistoria
+          </span>
+        </div>
+        <VistoriaChip status={unidade.vistoria} />
       </div>
 
       {/* Moradores */}
