@@ -82,3 +82,40 @@ export interface ApiError {
   error: string
   success: false
 }
+
+export interface UrlMetadata {
+  title?: string
+  description?: string
+  image?: string
+  logo?: string
+  url?: string
+}
+
+export interface Aviso {
+  aviso_id: number
+  titulo: string
+  corpo: string
+  url?: string | null
+  url_metadata?: UrlMetadata | null
+  autor?: string | null
+  ativo: boolean
+  fixado: boolean
+  createdAt: Date
+  updatedAt: Date
+}
+
+export interface CreateAvisoInput {
+  titulo: string
+  corpo: string
+  url?: string
+  autor?: string
+  fixado?: boolean
+}
+
+export interface UpdateAvisoInput {
+  titulo?: string
+  corpo?: string
+  url?: string
+  autor?: string
+  fixado?: boolean
+}

@@ -1,7 +1,7 @@
 import { QuadraService } from '@/lib/services/quadraService'
 import { UnidadeService } from '@/lib/services/unidadeService'
 import { QuadrasView } from '@/components/views/QuadrasView'
-import { Home, MapPin, Plus } from 'lucide-react'
+import { Home, MapPin, Plus, MessageSquare } from 'lucide-react'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import type { Quadra, Unidade } from '@/types'
@@ -62,16 +62,22 @@ export default async function HomePage() {
 
         {/* Navigation Buttons */}
         <div className="flex flex-row gap-4 justify-center items-center">
+          <Link href="/cadastrar">
+            <Button variant="secondary" className="gap-2 bg-purple-brand-500 hover:bg-purple-brand-600 text-white">
+              <Plus className="h-4 w-4" />
+              Cadastrar
+            </Button>
+          </Link>
           <Link href="/">
             <Button variant="default" className="gap-2 bg-olive-600 hover:bg-olive-700 text-white">
               <MapPin className="h-4 w-4" />
               Quadras
             </Button>
           </Link>
-          <Link href="/cadastrar">
-            <Button variant="secondary" className="gap-2 bg-purple-brand-500 hover:bg-purple-brand-600 text-white">
-              <Plus className="h-4 w-4" />
-              Cadastrar
+          <Link href="/avisos">
+            <Button variant="default" className="gap-2 bg-blue-600 hover:bg-blue-700 text-white">
+              <MessageSquare className="h-4 w-4" />
+              Avisos
             </Button>
           </Link>
         </div>

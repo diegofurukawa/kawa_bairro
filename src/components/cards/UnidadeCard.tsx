@@ -52,14 +52,14 @@ export function UnidadeCard({ unidade, className, variant = 'grid', onEdit, onVi
           <div className="flex flex-wrap gap-2">
             {/* Vistoria */}
             <div className="flex items-center gap-1">
-              <ClipboardCheck className="h-3 w-3 text-blue-600" />
+              <ClipboardCheck className="h-4 w-4 text-blue-600" />
               <VistoriaChip status={unidade.vistoria} size="sm" />
             </div>
 
             {/* Moradores com ícone */}
             {moradores.length > 0 && (
               <div className="flex items-center gap-1">
-                <Users className="h-3 w-3 text-green-600" />
+                <Users className="h-4 w-4 text-green-600" />
                 <span className="text-xs text-gray-600">{moradores.length}</span>
                 {moradores.slice(0, 2).map((morador, index) => (
                   <Chip key={index} variant="secondary" size="sm">
@@ -74,22 +74,21 @@ export function UnidadeCard({ unidade, className, variant = 'grid', onEdit, onVi
               </div>
             )}
             
-            {/* Contatos compactos no modo lista */}
+            {/* Contatos - linha a linha */}
             {contatos.length > 0 && (
-              <div className="flex items-center gap-1">
-                <Phone className="h-3 w-3 text-orange-600" />
-                <span className="text-xs text-gray-600">{contatos.length}</span>
-                {contatos.slice(0, 1).map((contato, index) => {
+              <div className="flex flex-col gap-1 w-full items-end">
+                {contatos.map((contato, index) => {
                   const contactInfo = analyzeContact(contato)
                   return (
                     <div key={index} className="flex items-center gap-1">
+                      <Phone className="h-4 w-4 text-orange-600 flex-shrink-0" />
                       <div
                         className={contactInfo.isPhone ? "cursor-pointer" : ""}
                         onClick={contactInfo.isPhone ? () => openWhatsApp(contato) : undefined}
                         title={contactInfo.isPhone ? "Clique para abrir no WhatsApp" : ""}
                       >
-                        <Chip 
-                          variant="default" 
+                        <Chip
+                          variant="default"
                           size="sm"
                           className={contactInfo.isPhone ? "hover:bg-green-100" : ""}
                         >
@@ -104,17 +103,12 @@ export function UnidadeCard({ unidade, className, variant = 'grid', onEdit, onVi
                           onClick={() => openWhatsApp(contato)}
                           title="Abrir no WhatsApp"
                         >
-                          <MessageCircle className="h-3 w-3" />
+                          <MessageCircle className="h-4 w-4" />
                         </Button>
                       )}
                     </div>
                   )
                 })}
-                {contatos.length > 1 && (
-                  <Chip variant="default" size="sm">
-                    +{contatos.length - 1}
-                  </Chip>
-                )}
               </div>
             )}
           </div>
@@ -125,16 +119,16 @@ export function UnidadeCard({ unidade, className, variant = 'grid', onEdit, onVi
           </div>
 
           {/* Botões de ação */}
-          <div className="flex gap-1 flex-shrink-0">
+          <div className="flex gap-1 flex-shrink-0 ml-auto sm:ml-0">
             {onView && (
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={() => onView(unidade)}
-                className="h-7 w-7 p-0 text-blue-600 hover:text-blue-700 hover:bg-blue-50"
+                className="h-8 w-8 p-0 text-blue-600 hover:text-blue-700 hover:bg-blue-50"
                 title="Visualizar"
               >
-                <Eye className="h-3 w-3" />
+                <Eye className="h-4 w-4" />
               </Button>
             )}
             {onEdit && (
@@ -142,10 +136,10 @@ export function UnidadeCard({ unidade, className, variant = 'grid', onEdit, onVi
                 variant="ghost"
                 size="sm"
                 onClick={() => onEdit(unidade)}
-                className="h-7 w-7 p-0 text-purple-600 hover:text-purple-700 hover:bg-purple-50"
+                className="h-8 w-8 p-0 text-purple-600 hover:text-purple-700 hover:bg-purple-50"
                 title="Editar"
               >
-                <Edit className="h-3 w-3" />
+                <Edit className="h-4 w-4" />
               </Button>
             )}
           </div>
