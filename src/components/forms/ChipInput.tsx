@@ -1,18 +1,17 @@
 'use client'
 
-import * as React from 'react'
-import { Plus, X } from 'lucide-react'
+import { ComponentProps, useState, KeyboardEvent, ChangeEvent } from 'react'
+import { Plus } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Chip } from '@/components/ui/chip'
-import { cn } from '@/lib/utils'
+import { twMerge } from 'tailwind-merge'
 
-export interface ChipInputProps {
+export interface ChipInputProps extends Omit<ComponentProps<'div'>, 'onChange'> {
   value: string[]
   onChange: (value: string[]) => void
   placeholder?: string
   maxItems?: number
-  className?: string
   label?: string
   error?: string
 }
@@ -24,11 +23,12 @@ export function ChipInput({
   maxItems = 10,
   className,
   label,
-  error
+  error,
+  ...props
 }: ChipInputProps) {
-  const [inputValue, setInputValue] = React.useState('')
+  const [inputValue, setInputValue] = useState('')
 
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' || e.key === ',') {
       e.preventDefault()
       addChip()
@@ -47,18 +47,18 @@ export function ChipInput({
     onChange(value.filter((_, i) => i !== index))
   }
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
     setInputValue(e.target.value)
   }
 
   return (
-    <div className={cn('space-y-2', className)}>
+    <div className={twMerge('space-y-2', className)} {...props}>
       {label && (
         <label className="text-sm font-medium text-foreground">
           {label}
         </label>
       )}
-      
+
       <div className="min-h-[40px] w-full rounded-md border border-input bg-background p-2">
         <div className="flex flex-wrap gap-1">
           {value.map((item, index) => (
@@ -71,7 +71,7 @@ export function ChipInput({
               {item}
             </Chip>
           ))}
-          
+
           {value.length < maxItems && (
             <div className="flex items-center gap-1">
               <Input
@@ -95,11 +95,11 @@ export function ChipInput({
           )}
         </div>
       </div>
-      
+
       {error && (
         <p className="text-sm text-destructive">{error}</p>
       )}
-      
+
       {value.length >= maxItems && (
         <p className="text-xs text-muted-foreground">
           Máximo de {maxItems} itens atingido

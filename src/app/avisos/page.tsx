@@ -4,6 +4,7 @@ import * as React from 'react'
 import { Plus, Loader2, AlertCircle } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { AvisoCard } from '@/components/cards/AvisoCard'
+import { AvisoCarousel } from '@/components/carousel/AvisoCarousel'
 import { AvisoForm } from '@/components/forms/AvisoForm'
 import type { Aviso, CreateAvisoInput, UpdateAvisoInput } from '@/types'
 
@@ -162,6 +163,13 @@ export default function AvisosPage() {
             )}
           </div>
         </div>
+
+        {/* Carrossel de Avisos */}
+        {!isLoading && avisos.length > 0 && (
+          <div className="mb-8 -mx-6">
+            <AvisoCarousel avisos={avisos} />
+          </div>
+        )}
 
         {/* Formulário */}
         {(showForm || editingAviso) && (

@@ -7,6 +7,7 @@ const prisma = new PrismaClient()
 interface UnidadeData {
   numero: string
   moradores: string[]
+  vistoria: string | null
 }
 
 interface QuadraData {
@@ -16,42 +17,95 @@ interface QuadraData {
 
 function parseCargaFile(filePath: string): QuadraData[] {
   const content = fs.readFileSync(filePath, 'utf-8')
-  const lines = content.split('\n').map(line => line.trim()).filter(line => line.length > 0)
+  const lines = content.split('\n')
   
   const quadras: QuadraData[] = []
   let currentQuadra: QuadraData | null = null
   
-  for (const line of lines) {
-    // Verifica se é uma linha de quadra
-    if (line.startsWith('QUADRA ')) {
+  for (let i = 0; i < lines.length; i++) {
+    let line = lines[i].trim()
+    
+    // Ignora linhas vazias, cabeçalhos e linhas de legenda
+    if (line.length === 0 || 
+        line.startsWith('Lista de') || 
+        line.startsWith('Última atualização') ||
+        line === '❌ Vistoria Reprovada' ||
+        line === '✅ Vistoria Aprovada') {
+      continue
+    }
+    
+    // Verifica se é uma linha de quadra (pode começar com * ou QUADRA)
+    const quadraMatch = line.match(/^\*?(?:QUADRA\s+)?([A-Z0-9]+)\*?$/i)
+    if (quadraMatch) {
       // Salva a quadra anterior se existir
       if (currentQuadra) {
         quadras.push(currentQuadra)
       }
       
       // Cria nova quadra
-      const quadraName = line.replace('QUADRA ', '').trim()
+      const quadraName = quadraMatch[1].toUpperCase()
       currentQuadra = {
-        nome: quadraName.toUpperCase(),
+        nome: `QUADRA - ${quadraName}`,
         unidades: []
       }
     } else if (currentQuadra && line.length > 0) {
       // Processa linha de unidade
-      const parts = line.split('\t')
-      if (parts.length >= 2) {
-        const numero = parts[0].trim()
-        const moradoresText = parts[1].trim()
+      let numero = ''
+      let moradoresText = ''
+      let vistoria: string | null = null
+      
+      // Extrai status da vistoria (✅ ou ❌) do final da linha
+      // Procura pelo primeiro emoji encontrado (prioriza ✅ sobre ❌ se ambos existirem)
+      const hasAprovada = line.includes('✅')
+      const hasReprovada = line.includes('❌')
+      
+      if (hasAprovada || hasReprovada) {
+        // Se tem ambos, prioriza o último (mais à direita)
+        if (hasAprovada && hasReprovada) {
+          const lastAprovada = line.lastIndexOf('✅')
+          const lastReprovada = line.lastIndexOf('❌')
+          vistoria = lastAprovada > lastReprovada ? 'realizado' : 'reprovada'
+        } else {
+          vistoria = hasAprovada ? 'realizado' : 'reprovada'
+        }
+        // Remove o emoji e qualquer texto relacionado do final (palavras como "Reprovada", "Aprovada", etc)
+        line = line.replace(/[✅❌].*$/, '').replace(/\b(Reprovada|Aprovada|reprovado|aprovado)\b/gi, '').trim()
+      }
+      
+      // Verifica se tem tab
+      if (line.includes('\t')) {
+        const parts = line.split('\t')
+        numero = parts[0].trim()
+        moradoresText = parts[1] ? parts[1].trim() : ''
+      } else {
+        // Se não tem tab, tenta separar por espaço
+        const match = line.match(/^([A-Z0-9\-\s]+?)\s+(.+)$/)
+        if (match) {
+          numero = match[1].trim().replace(/\s+/g, '') // Remove espaços extras do número
+          moradoresText = match[2].trim()
+        }
+      }
+      
+      // Valida se o número da unidade tem formato válido (deve ter pelo menos um número)
+      const isValidNumero = numero && /[0-9]/.test(numero) && numero.length >= 2
+      
+      if (isValidNumero && moradoresText) {
+        // Remove qualquer emoji ou texto de status que possa ter sobrado
+        moradoresText = moradoresText.replace(/[✅❌].*$/, '').trim()
         
         // Separa os moradores por " e " ou " e"
         const moradores = moradoresText
           .split(/ e | e$/)
           .map(m => m.trim())
-          .filter(m => m.length > 0)
+          .filter(m => m.length > 0 && !m.match(/^[✅❌]/))
         
-        currentQuadra.unidades.push({
-          numero,
-          moradores
-        })
+        if (moradores.length > 0) {
+          currentQuadra.unidades.push({
+            numero,
+            moradores,
+            vistoria
+          })
+        }
       }
     }
   }
@@ -90,37 +144,71 @@ async function importCargaData() {
     for (const quadraData of quadrasData) {
       console.log(`\n🏘️ Processando quadra: ${quadraData.nome}`)
       
-      // Criar quadra
-      const quadra = await prisma.quadra.create({
-        data: {
-          quadra_name: quadraData.nome
-        }
+      // Buscar ou criar quadra
+      let quadra = await prisma.quadra.findUnique({
+        where: { quadra_name: quadraData.nome }
       })
       
-      console.log(`   ✅ Quadra criada: ${quadra.quadra_name}`)
+      if (!quadra) {
+        quadra = await prisma.quadra.create({
+          data: {
+            quadra_name: quadraData.nome
+          }
+        })
+        console.log(`   ✅ Quadra criada: ${quadra.quadra_name}`)
+      } else {
+        console.log(`   ℹ️ Quadra já existe: ${quadra.quadra_name}`)
+      }
       
-      // Criar unidades
+      // Criar ou atualizar unidades
       for (const unidadeData of quadraData.unidades) {
         try {
-          // Gerar contatos fictícios baseados nos moradores
-          const contatos = unidadeData.moradores.map((_, index) => {
-            // Simular telefone
-            const telefone = `119${String(Math.floor(Math.random() * 100000000)).padStart(8, '0')}`
-            return telefone
+          // Verificar se a unidade já existe
+          const existingUnidade = await prisma.unidade.findUnique({
+            where: { unidade_numero: unidadeData.numero }
           })
           
-          await prisma.unidade.create({
-            data: {
-              unidade_numero: unidadeData.numero,
-              quadra_id: quadra.quadra_id,
-              mora: JSON.stringify(unidadeData.moradores),
-              contato: JSON.stringify(contatos)
+          if (existingUnidade) {
+            // Unidade já existe - preservar o que está no banco
+            const vistoriaToUpdate = existingUnidade.vistoria 
+              ? null // Se já tem vistoria no banco, não atualizar
+              : unidadeData.vistoria // Se não tem, usar o do arquivo
+            
+            if (vistoriaToUpdate !== null) {
+              await prisma.unidade.update({
+                where: { unidade_numero: unidadeData.numero },
+                data: {
+                  vistoria: vistoriaToUpdate
+                }
+              })
+              console.log(`   🔄 Unidade ${unidadeData.numero} atualizada (vistoria: ${vistoriaToUpdate || 'null'})`)
+            } else {
+              console.log(`   ⏭️ Unidade ${unidadeData.numero} já existe com vistoria - preservando valor do banco`)
             }
-          })
-          
-          console.log(`   ✅ Unidade ${unidadeData.numero}: ${unidadeData.moradores.join(', ')}`)
+          } else {
+            // Gerar contatos fictícios baseados nos moradores
+            const contatos = unidadeData.moradores.map((_, index) => {
+              // Simular telefone
+              const telefone = `119${String(Math.floor(Math.random() * 100000000)).padStart(8, '0')}`
+              return telefone
+            })
+            
+            // Criar nova unidade
+            await prisma.unidade.create({
+              data: {
+                unidade_numero: unidadeData.numero,
+                quadra_id: quadra.quadra_id,
+                mora: JSON.stringify(unidadeData.moradores),
+                contato: JSON.stringify(contatos),
+                vistoria: unidadeData.vistoria
+              }
+            })
+            
+            const vistoriaInfo = unidadeData.vistoria ? ` (vistoria: ${unidadeData.vistoria})` : ''
+            console.log(`   ✅ Unidade ${unidadeData.numero}: ${unidadeData.moradores.join(', ')}${vistoriaInfo}`)
+          }
         } catch (error) {
-          console.error(`   ❌ Erro ao criar unidade ${unidadeData.numero}:`, error)
+          console.error(`   ❌ Erro ao processar unidade ${unidadeData.numero}:`, error)
         }
       }
     }

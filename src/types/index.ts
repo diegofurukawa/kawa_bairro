@@ -15,7 +15,7 @@ export interface Quadra {
   updatedAt: Date
 }
 
-export type VistoriaStatus = 'agendado' | 'realizado' | 'remarcado' | 'pendente'
+export type VistoriaStatus = 'agendado' | 'realizado' | 'remarcado' | 'pendente' | 'reprovada'
 
 export interface Unidade {
   unidade_id: number

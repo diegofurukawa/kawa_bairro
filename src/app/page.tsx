@@ -1,37 +1,41 @@
 import { QuadraService } from '@/lib/services/quadraService'
 import { UnidadeService } from '@/lib/services/unidadeService'
+import { AvisoService } from '@/lib/services/avisoService'
 import { QuadrasView } from '@/components/views/QuadrasView'
+import { AvisoCarouselClient } from '@/components/carousel/AvisoCarouselClient'
 import { Home, MapPin, Plus, MessageSquare } from 'lucide-react'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
-import type { Quadra, Unidade } from '@/types'
+import type { Quadra, Unidade, Aviso } from '@/types'
 
 async function getData() {
   try {
     console.log('🔍 [HomePage] Carregando dados...')
     console.log('🔍 [HomePage] DATABASE_URL:', process.env.DATABASE_URL)
-    
-    const [quadras, unidades] = await Promise.all([
+
+    const [quadras, unidades, avisos] = await Promise.all([
       QuadraService.findAll(),
-      UnidadeService.findAll()
+      UnidadeService.findAll(),
+      AvisoService.findAll()
     ])
-    
+
     console.log(`📊 [HomePage] Dados carregados:`, {
       quadras: quadras.length,
       unidades: unidades.length,
+      avisos: avisos.length,
       quadrasData: quadras.map(q => ({ id: q.quadra_id, nome: q.quadra_name })),
       unidadesData: unidades.map(u => ({ id: u.unidade_id, numero: u.unidade_numero, quadra: u.quadra?.quadra_name }))
     })
-    
+
     // Log adicional para debug
     console.log('🔍 [HomePage] Primeira quadra:', quadras[0])
     console.log('🔍 [HomePage] Primeira unidade:', unidades[0])
-    
-    return { quadras, unidades }
+
+    return { quadras, unidades, avisos }
   } catch (error) {
     console.error('❌ [HomePage] Erro ao carregar dados:', error)
     console.error('❌ [HomePage] Stack trace:', error instanceof Error ? error.stack : 'No stack trace')
-    return { quadras: [], unidades: [] }
+    return { quadras: [], unidades: [], avisos: [] }
   }
 }
 
@@ -40,15 +44,16 @@ export const dynamic = 'force-dynamic'
 
 export default async function HomePage() {
   console.log('🔍 [HomePage] Iniciando renderização...')
-  
-  const { quadras, unidades } = await getData()
-  
+
+  const { quadras, unidades, avisos } = await getData()
+
   // Log adicional para debug no servidor
   console.log('🔍 [HomePage] Renderizando com dados:', {
     quadrasCount: quadras.length,
-    unidadesCount: unidades.length
+    unidadesCount: unidades.length,
+    avisosCount: avisos.length
   })
-  
+
   return (
     <div className="max-w-7xl mx-auto space-y-6">
       <div className="text-center space-y-4">
@@ -82,6 +87,13 @@ export default async function HomePage() {
           </Link>
         </div>
       </div>
+
+      {/* Carrossel de Avisos */}
+      {avisos.length > 0 && (
+        <div className="-mx-6">
+          <AvisoCarouselClient avisos={avisos} />
+        </div>
+      )}
 
       <QuadrasView quadras={quadras} unidades={unidades} />
     </div>

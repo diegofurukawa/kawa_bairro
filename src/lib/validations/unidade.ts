@@ -1,6 +1,6 @@
 import { z } from 'zod'
 
-export const vistoriaStatusEnum = z.enum(['agendado', 'realizado', 'remarcado', 'pendente'])
+export const vistoriaStatusEnum = z.enum(['agendado', 'realizado', 'remarcado', 'pendente', 'reprovada'])
 
 export const CreateUnidadeSchema = z.object({
   unidade_numero: z

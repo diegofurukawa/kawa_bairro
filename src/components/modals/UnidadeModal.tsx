@@ -257,6 +257,7 @@ export function UnidadeModal({
                 <option value="agendado">Agendado</option>
                 <option value="realizado">Realizado</option>
                 <option value="remarcado">Remarcado</option>
+                <option value="reprovada">Reprovada</option>
               </select>
             )}
           </div>

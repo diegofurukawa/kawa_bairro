@@ -22,7 +22,7 @@ export interface FormData {
   quadra_name: string
   mora: string[]
   contato: string[]
-  vistoria: 'agendado' | 'realizado' | 'remarcado' | 'pendente' | null
+  vistoria: 'agendado' | 'realizado' | 'remarcado' | 'pendente' | 'reprovada' | null
 }
 
 export interface FormErrors {
@@ -277,6 +277,7 @@ export function UnidadeForm({ quadras, className, onQuadraCreated }: UnidadeForm
               <option value="agendado">Agendado</option>
               <option value="realizado">Realizado</option>
               <option value="remarcado">Remarcado</option>
+              <option value="reprovada">Reprovada</option>
             </select>
           </div>
         </div>

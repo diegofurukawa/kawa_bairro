@@ -1,7 +1,7 @@
 'use client'
 
 import * as React from 'react'
-import { Search, MapPin, Home, Users, Phone, Grid3X3, List, X } from 'lucide-react'
+import { Search, MapPin, Home, Users, Phone, Grid3X3, List, X, ClipboardCheck } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
@@ -135,6 +135,37 @@ export function QuadrasView({ quadras, unidades }: QuadrasViewProps) {
     }, 0)
   }, [filteredUnidades])
 
+  // Contadores de status de vistoria
+  const vistoriaStats = React.useMemo(() => {
+    const stats = {
+      agendado: 0,
+      realizado: 0,
+      remarcado: 0,
+      pendente: 0,
+      reprovada: 0
+    }
+    
+    filteredUnidades.forEach(unidade => {
+      const status = unidade.vistoria || 'pendente'
+      if (status in stats) {
+        stats[status as keyof typeof stats]++
+      } else {
+        stats.pendente++
+      }
+    })
+    
+    const total = filteredUnidades.length
+    const percentages = {
+      agendado: total > 0 ? (stats.agendado / total) * 100 : 0,
+      realizado: total > 0 ? (stats.realizado / total) * 100 : 0,
+      remarcado: total > 0 ? (stats.remarcado / total) * 100 : 0,
+      pendente: total > 0 ? (stats.pendente / total) * 100 : 0,
+      reprovada: total > 0 ? (stats.reprovada / total) * 100 : 0
+    }
+    
+    return { ...stats, total, percentages }
+  }, [filteredUnidades])
+
   // Funções do modal
   const handleViewUnidade = (unidade: Unidade) => {
     setSelectedUnidade(unidade)
@@ -218,6 +249,83 @@ export function QuadrasView({ quadras, unidades }: QuadrasViewProps) {
               <div>
                 <p className="text-xl font-bold text-gray-900">{totalContatos}</p>
                 <p className="text-sm text-gray-600">Contatos</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Estatísticas de Vistoria - Hidden on mobile */}
+      {!isMobile && (
+        <div className="space-y-3">
+          <div className="flex items-center gap-2">
+            <ClipboardCheck className="h-5 w-5 text-blue-600" />
+            <h2 className="text-lg font-semibold text-gray-900">Status de Vistoria</h2>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-6 gap-4">
+            <div className="bg-white rounded-lg p-4 shadow-sm border">
+              <div className="flex items-center gap-3">
+                <div className="h-3 w-3 rounded-full bg-gray-500"></div>
+                <div className="flex-1">
+                  <p className="text-xl font-bold text-gray-900">{vistoriaStats.pendente}</p>
+                  <p className="text-sm text-gray-600">Pendente</p>
+                  <p className="text-xs text-gray-400 mt-1">{vistoriaStats.percentages.pendente.toFixed(1)}%</p>
+                </div>
+              </div>
+            </div>
+            
+            <div className="bg-white rounded-lg p-4 shadow-sm border">
+              <div className="flex items-center gap-3">
+                <div className="h-3 w-3 rounded-full bg-yellow-500"></div>
+                <div className="flex-1">
+                  <p className="text-xl font-bold text-gray-900">{vistoriaStats.agendado}</p>
+                  <p className="text-sm text-gray-600">Agendado</p>
+                  <p className="text-xs text-gray-400 mt-1">{vistoriaStats.percentages.agendado.toFixed(1)}%</p>
+                </div>
+              </div>
+            </div>
+            
+            <div className="bg-white rounded-lg p-4 shadow-sm border">
+              <div className="flex items-center gap-3">
+                <div className="h-3 w-3 rounded-full bg-orange-500"></div>
+                <div className="flex-1">
+                  <p className="text-xl font-bold text-gray-900">{vistoriaStats.remarcado}</p>
+                  <p className="text-sm text-gray-600">Remarcado</p>
+                  <p className="text-xs text-gray-400 mt-1">{vistoriaStats.percentages.remarcado.toFixed(1)}%</p>
+                </div>
+              </div>
+            </div>
+            
+            <div className="bg-white rounded-lg p-4 shadow-sm border">
+              <div className="flex items-center gap-3">
+                <div className="h-3 w-3 rounded-full bg-green-500"></div>
+                <div className="flex-1">
+                  <p className="text-xl font-bold text-gray-900">{vistoriaStats.realizado}</p>
+                  <p className="text-sm text-gray-600">Realizado</p>
+                  <p className="text-xs text-gray-400 mt-1">{vistoriaStats.percentages.realizado.toFixed(1)}%</p>
+                </div>
+              </div>
+            </div>
+            
+            <div className="bg-white rounded-lg p-4 shadow-sm border">
+              <div className="flex items-center gap-3">
+                <div className="h-3 w-3 rounded-full bg-red-500"></div>
+                <div className="flex-1">
+                  <p className="text-xl font-bold text-gray-900">{vistoriaStats.reprovada}</p>
+                  <p className="text-sm text-gray-600">Reprovada</p>
+                  <p className="text-xs text-gray-400 mt-1">{vistoriaStats.percentages.reprovada.toFixed(1)}%</p>
+                </div>
+              </div>
+            </div>
+            
+            <div className="bg-white rounded-lg p-4 shadow-sm border border-blue-200">
+              <div className="flex items-center gap-3">
+                <ClipboardCheck className="h-4 w-4 text-blue-600" />
+                <div className="flex-1">
+                  <p className="text-xl font-bold text-gray-900">{vistoriaStats.total}</p>
+                  <p className="text-sm text-gray-600">Total</p>
+                  <p className="text-xs text-gray-400 mt-1">100%</p>
+                </div>
               </div>
             </div>
           </div>

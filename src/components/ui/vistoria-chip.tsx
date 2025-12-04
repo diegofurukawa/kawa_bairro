@@ -1,11 +1,10 @@
-import * as React from 'react'
+import { ComponentProps } from 'react'
 import { Chip } from '@/components/ui/chip'
-import { cn } from '@/lib/utils'
+import { twMerge } from 'tailwind-merge'
 import type { VistoriaStatus } from '@/types'
 
-export interface VistoriaChipProps {
+export interface VistoriaChipProps extends Omit<ComponentProps<'div'>, 'children'> {
   status: VistoriaStatus | null
-  className?: string
   size?: 'sm' | 'md' | 'lg'
 }
 
@@ -25,15 +24,20 @@ const vistoriaConfig: Record<VistoriaStatus, { label: string; className: string 
   pendente: {
     label: 'Pendente',
     className: 'bg-gray-100 text-gray-600 border border-gray-300'
+  },
+  reprovada: {
+    label: 'Reprovada',
+    className: 'bg-red-100 text-red-800 border border-red-300'
   }
 }
 
-export function VistoriaChip({ status, className, size = 'sm' }: VistoriaChipProps) {
+export function VistoriaChip({ status, className, size = 'sm', ...props }: VistoriaChipProps) {
   if (!status) {
     return (
       <Chip
         size={size}
-        className={cn('bg-gray-100 text-gray-600 border border-gray-300', className)}
+        className={twMerge('bg-gray-100 text-gray-600 border border-gray-300', className)}
+        {...props}
       >
         Pendente
       </Chip>
@@ -45,7 +49,8 @@ export function VistoriaChip({ status, className, size = 'sm' }: VistoriaChipPro
   return (
     <Chip
       size={size}
-      className={cn(config.className, className)}
+      className={twMerge(config.className, className)}
+      {...props}
     >
       {config.label}
     </Chip>
