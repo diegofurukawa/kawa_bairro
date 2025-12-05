@@ -4,6 +4,7 @@ import * as React from 'react'
 import useEmblaCarousel from 'embla-carousel-react'
 import Autoplay from 'embla-carousel-autoplay'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
+import Image from 'next/image'
 import { cn } from '@/lib/utils'
 import { AvisoCarouselCard } from '@/components/cards/AvisoCarouselCard'
 import type { Aviso } from '@/types'
@@ -78,11 +79,17 @@ export function AvisoCarousel({ avisos, className }: AvisoCarouselProps) {
     emblaApi.on('select', onSelect)
     emblaApi.on('reInit', onSelect)
 
+    // Iniciar em uma posição aleatória
+    if (avisos.length > 0) {
+      const randomIndex = Math.floor(Math.random() * avisos.length)
+      emblaApi.scrollTo(randomIndex, false) // false = sem animação no início
+    }
+
     return () => {
       emblaApi.off('select', onSelect)
       emblaApi.off('reInit', onSelect)
     }
-  }, [emblaApi, onSelect])
+  }, [emblaApi, onSelect, avisos.length])
 
   // Keyboard navigation - only when carousel is focused
   const viewportRef = React.useRef<HTMLDivElement | null>(null)
@@ -139,7 +146,7 @@ export function AvisoCarousel({ avisos, className }: AvisoCarouselProps) {
   }
 
   return (
-    <div className={cn('w-full py-6 bg-gray-50', className)}>
+    <div className={cn('w-full py-6', className)}>
       <div className="max-w-7xl mx-auto px-4">
         {/* Carousel Container */}
         <div className="relative">
@@ -156,11 +163,11 @@ export function AvisoCarousel({ avisos, className }: AvisoCarouselProps) {
             aria-label="Carrossel de avisos"
             tabIndex={0}
           >
-            <div className="flex gap-4 lg:gap-6">
+            <div className="flex gap-4 lg:gap-6 py-2">
               {avisos.map((aviso) => (
                 <div
                   key={aviso.aviso_id}
-                  className="flex-[0_0_100%] md:flex-[0_0_calc(50%-8px)] lg:flex-[0_0_calc(25%-12px)] min-w-0"
+                  className="flex-[0_0_100%] md:flex-[0_0_calc(50%-8px)] lg:flex-[0_0_calc(25%-12px)] min-w-0 px-1"
                 >
                   <AvisoCarouselCard 
                     aviso={aviso} 
@@ -168,6 +175,21 @@ export function AvisoCarousel({ avisos, className }: AvisoCarouselProps) {
                   />
                 </div>
               ))}
+              {/* Espaçamento fantasma com logo para garantir gap no loop */}
+              <div 
+                className="flex-[0_0_100%] md:flex-[0_0_calc(50%-8px)] lg:flex-[0_0_calc(25%-12px)] min-w-0 pointer-events-none flex items-center justify-center px-1 py-2"
+                aria-hidden="true"
+              >
+                <div className="w-full h-full flex items-center justify-center p-4">
+                  <Image
+                    src="/logo-horizontal-jd-das-oliveiras-1000px.webp"
+                    alt="Jardim das Oliveiras"
+                    width={200}
+                    height={60}
+                    className="h-auto w-full max-w-[200px] opacity-60"
+                  />
+                </div>
+              </div>
             </div>
           </div>
 

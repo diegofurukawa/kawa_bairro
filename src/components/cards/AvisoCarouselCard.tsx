@@ -118,9 +118,9 @@ export function AvisoCarouselCard({ aviso, className, onClick }: AvisoCarouselCa
       </div>
 
       {/* Title only - compact */}
-      <div className="p-3 bg-white border-t border-gray-100">
+      <div className="h-16 md:h-20 flex items-center justify-center p-3 md:p-4 bg-white border-t border-gray-100">
         <h3
-          className="font-semibold text-sm md:text-base text-gray-900 line-clamp-2"
+          className="font-bold text-sm md:text-base text-center text-gray-900 line-clamp-2 leading-tight w-full px-2"
           title={aviso.titulo}
         >
           {aviso.titulo}
@@ -130,10 +130,10 @@ export function AvisoCarouselCard({ aviso, className, onClick }: AvisoCarouselCa
   )
 
   const baseClasses = cn(
-    'relative bg-white rounded-lg shadow-sm transition-all duration-300 flex flex-col overflow-hidden',
+    'relative bg-white rounded-lg shadow-sm border-2 border-olive-600 transition-all duration-300 flex flex-col overflow-hidden',
     'h-[240px] md:h-[280px]',
     (hasUrl || onClick) && 'cursor-pointer',
-    isActive ? 'scale-[0.98] shadow-md' : 'hover:scale-[1.02] hover:shadow-xl',
+    isActive ? 'scale-[0.99] shadow-md' : 'hover:scale-[1.01] hover:shadow-xl',
     !hasUrl && !onClick && 'hover:shadow-md',
     className
   )

@@ -255,82 +255,80 @@ export function QuadrasView({ quadras, unidades }: QuadrasViewProps) {
         </div>
       )}
 
-      {/* Estatísticas de Vistoria - Hidden on mobile */}
-      {!isMobile && (
-        <div className="space-y-3">
-          <div className="flex items-center gap-2">
-            <ClipboardCheck className="h-5 w-5 text-blue-600" />
-            <h2 className="text-lg font-semibold text-gray-900">Status de Vistoria</h2>
+      {/* Estatísticas de Vistoria */}
+      <div className="space-y-3">
+        <div className="flex items-center gap-2">
+          <ClipboardCheck className="h-5 w-5 text-blue-600" />
+          <h2 className="text-lg font-semibold text-gray-900">Status de Vistoria</h2>
+        </div>
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-4">
+          <div className="bg-white rounded-lg p-4 shadow-sm border">
+            <div className="flex items-center gap-3">
+              <div className="h-3 w-3 rounded-full bg-gray-500"></div>
+              <div className="flex-1">
+                <p className="text-xl font-bold text-gray-900">{vistoriaStats.pendente}</p>
+                <p className="text-sm text-gray-600">Pendente</p>
+                <p className="text-xs text-gray-400 mt-1">{vistoriaStats.percentages.pendente.toFixed(1)}%</p>
+              </div>
+            </div>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-6 gap-4">
-            <div className="bg-white rounded-lg p-4 shadow-sm border">
-              <div className="flex items-center gap-3">
-                <div className="h-3 w-3 rounded-full bg-gray-500"></div>
-                <div className="flex-1">
-                  <p className="text-xl font-bold text-gray-900">{vistoriaStats.pendente}</p>
-                  <p className="text-sm text-gray-600">Pendente</p>
-                  <p className="text-xs text-gray-400 mt-1">{vistoriaStats.percentages.pendente.toFixed(1)}%</p>
-                </div>
+          
+          <div className="bg-white rounded-lg p-4 shadow-sm border">
+            <div className="flex items-center gap-3">
+              <div className="h-3 w-3 rounded-full bg-yellow-500"></div>
+              <div className="flex-1">
+                <p className="text-xl font-bold text-gray-900">{vistoriaStats.agendado}</p>
+                <p className="text-sm text-gray-600">Agendado</p>
+                <p className="text-xs text-gray-400 mt-1">{vistoriaStats.percentages.agendado.toFixed(1)}%</p>
               </div>
             </div>
-            
-            <div className="bg-white rounded-lg p-4 shadow-sm border">
-              <div className="flex items-center gap-3">
-                <div className="h-3 w-3 rounded-full bg-yellow-500"></div>
-                <div className="flex-1">
-                  <p className="text-xl font-bold text-gray-900">{vistoriaStats.agendado}</p>
-                  <p className="text-sm text-gray-600">Agendado</p>
-                  <p className="text-xs text-gray-400 mt-1">{vistoriaStats.percentages.agendado.toFixed(1)}%</p>
-                </div>
+          </div>
+          
+          <div className="bg-white rounded-lg p-4 shadow-sm border">
+            <div className="flex items-center gap-3">
+              <div className="h-3 w-3 rounded-full bg-orange-500"></div>
+              <div className="flex-1">
+                <p className="text-xl font-bold text-gray-900">{vistoriaStats.remarcado}</p>
+                <p className="text-sm text-gray-600">Remarcado</p>
+                <p className="text-xs text-gray-400 mt-1">{vistoriaStats.percentages.remarcado.toFixed(1)}%</p>
               </div>
             </div>
-            
-            <div className="bg-white rounded-lg p-4 shadow-sm border">
-              <div className="flex items-center gap-3">
-                <div className="h-3 w-3 rounded-full bg-orange-500"></div>
-                <div className="flex-1">
-                  <p className="text-xl font-bold text-gray-900">{vistoriaStats.remarcado}</p>
-                  <p className="text-sm text-gray-600">Remarcado</p>
-                  <p className="text-xs text-gray-400 mt-1">{vistoriaStats.percentages.remarcado.toFixed(1)}%</p>
-                </div>
+          </div>
+          
+          <div className="bg-white rounded-lg p-4 shadow-sm border">
+            <div className="flex items-center gap-3">
+              <div className="h-3 w-3 rounded-full bg-green-500"></div>
+              <div className="flex-1">
+                <p className="text-xl font-bold text-gray-900">{vistoriaStats.realizado}</p>
+                <p className="text-sm text-gray-600">Realizado</p>
+                <p className="text-xs text-gray-400 mt-1">{vistoriaStats.percentages.realizado.toFixed(1)}%</p>
               </div>
             </div>
-            
-            <div className="bg-white rounded-lg p-4 shadow-sm border">
-              <div className="flex items-center gap-3">
-                <div className="h-3 w-3 rounded-full bg-green-500"></div>
-                <div className="flex-1">
-                  <p className="text-xl font-bold text-gray-900">{vistoriaStats.realizado}</p>
-                  <p className="text-sm text-gray-600">Realizado</p>
-                  <p className="text-xs text-gray-400 mt-1">{vistoriaStats.percentages.realizado.toFixed(1)}%</p>
-                </div>
+          </div>
+          
+          <div className="bg-white rounded-lg p-4 shadow-sm border">
+            <div className="flex items-center gap-3">
+              <div className="h-3 w-3 rounded-full bg-red-500"></div>
+              <div className="flex-1">
+                <p className="text-xl font-bold text-gray-900">{vistoriaStats.reprovada}</p>
+                <p className="text-sm text-gray-600">Reprovada</p>
+                <p className="text-xs text-gray-400 mt-1">{vistoriaStats.percentages.reprovada.toFixed(1)}%</p>
               </div>
             </div>
-            
-            <div className="bg-white rounded-lg p-4 shadow-sm border">
-              <div className="flex items-center gap-3">
-                <div className="h-3 w-3 rounded-full bg-red-500"></div>
-                <div className="flex-1">
-                  <p className="text-xl font-bold text-gray-900">{vistoriaStats.reprovada}</p>
-                  <p className="text-sm text-gray-600">Reprovada</p>
-                  <p className="text-xs text-gray-400 mt-1">{vistoriaStats.percentages.reprovada.toFixed(1)}%</p>
-                </div>
-              </div>
-            </div>
-            
-            <div className="bg-white rounded-lg p-4 shadow-sm border border-blue-200">
-              <div className="flex items-center gap-3">
-                <ClipboardCheck className="h-4 w-4 text-blue-600" />
-                <div className="flex-1">
-                  <p className="text-xl font-bold text-gray-900">{vistoriaStats.total}</p>
-                  <p className="text-sm text-gray-600">Total</p>
-                  <p className="text-xs text-gray-400 mt-1">100%</p>
-                </div>
+          </div>
+          
+          <div className="bg-white rounded-lg p-4 shadow-sm border border-blue-200">
+            <div className="flex items-center gap-3">
+              <ClipboardCheck className="h-4 w-4 text-blue-600" />
+              <div className="flex-1">
+                <p className="text-xl font-bold text-gray-900">{vistoriaStats.total}</p>
+                <p className="text-sm text-gray-600">Total</p>
+                <p className="text-xs text-gray-400 mt-1">100%</p>
               </div>
             </div>
           </div>
         </div>
-      )}
+      </div>
 
       {/* Barra de pesquisa */}
       <div className="bg-white rounded-lg shadow-sm border p-4">
