@@ -33,7 +33,7 @@ services:
       "
     networks:
       kawatech-network:
-        ipv4_address: ${IP_KAWA_MIGRATE:-10.10.0.25}
+        # ipv4_address: ${IP_KAWA_MIGRATE:-10.10.0.25}
     restart: "no"
     deploy:
       restart_policy:
