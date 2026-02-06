@@ -1,13 +1,10 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  output: 'standalone',
   typedRoutes: true,
   images: {
     domains: [],
   },
-  // Removido output: 'standalone' que estava causando problemas
-  // devIndicators: {
-  //   buildActivity: false,
-  // },
   webpack: (config, { isServer }) => {
     if (isServer) {
       // Externalizar dependências nativas do metascraper apenas no servidor

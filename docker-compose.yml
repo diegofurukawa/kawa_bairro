@@ -1,42 +1,83 @@
+# =============================================================================
+# PRODUCTION STACK - Portainer Deploy Ready
+# =============================================================================
+# This stack is designed for Portainer deployment with:
+# - External network consumption (kawatech-network)
+# - Separate migration service
+# - Multi-stage Docker build
+# - No registry dependencies
+# =============================================================================
+
 services:
+  # ===========================================================================
+  # MIGRATION SERVICE
+  # ===========================================================================
+  # Runs Prisma migrations before app starts
+  # Container is ephemeral - exits after completion
+  # ===========================================================================
+  migrate:
+    build:
+      context: .
+      target: deps
+      args:
+        - NODE_ENV=production
+    environment:
+      - DATABASE_URL=${DATABASE_URL}
+    command: >
+      sh -c "
+        echo '⏳ Waiting for database...' &&
+        sleep 5 &&
+        echo '🔄 Running Prisma migrations...' &&
+        npx prisma migrate deploy &&
+        echo '✅ Migrations completed successfully!'
+      "
+    networks:
+      kawatech-network:
+        ipv4_address: ${IP_KAWA_MIGRATE:-10.10.0.25}
+    restart: "no"
+    deploy:
+      restart_policy:
+        condition: none
+
+  # ===========================================================================
+  # APPLICATION SERVICE
+  # ===========================================================================
+  # Serves the Next.js application
+  # Depends on successful migration completion
+  # ===========================================================================
   app:
     build:
       context: .
+      target: runtime
       args:
-        EXTERNAL_PORT: ${EXTERNAL_PORT:-3313}
-        INTERNAL_PORT: ${INTERNAL_PORT:-3313}
-        POSTGRES_HOST: ${POSTGRES_HOST}
-        POSTGRES_PORT: ${POSTGRES_PORT}
-        POSTGRES_USER: ${POSTGRES_USER}
-        POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-        POSTGRES_DB: ${POSTGRES_DB}
-        POSTGRES_SSL: false        
-        DATABASE_URL: ${DATABASE_URL:-postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}}
+        - NODE_ENV=production
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      - DATABASE_URL=${DATABASE_URL}
     ports:
-      - "${EXTERNAL_PORT:-3313}:${INTERNAL_PORT:-3313}"
+      - "${EXTERNAL_PORT:-3313}:3000"
     networks:
-      furukawatech-network:
-        ipv4_address: 172.30.0.55   
-    env_file:
-      - docker.env
-    volumes:
-      - app-data:/app/data
-    # Health check para garantir que a aplicação está funcionando
+      kawatech-network:
+        ipv4_address: ${IP_KAWA_APP:-10.10.0.30}
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
     healthcheck:
-      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3313/api/health"]
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3000/api/health"]
       interval: 30s
       timeout: 10s
       retries: 3
       start_period: 40s
-    # Restart policy para garantir que a aplicação reinicie se falhar
     restart: unless-stopped
 
-# Custom Network
+# =============================================================================
+# NETWORK CONFIGURATION
+# =============================================================================
+# Uses external network managed outside this stack
+# Network must be created beforehand: docker network create kawatech-network
+# =============================================================================
 networks:
-  furukawatech-network:
+  kawatech-network:
     external: true
-
-# Volumes
-volumes:
-  app-data:
-    driver: local
+    name: ${DOCKER_NETWORK_NAME:-kawatech-network}

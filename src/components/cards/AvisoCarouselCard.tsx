@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { MessageSquare } from 'lucide-react'
+import { MessageSquare, ExternalLink } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import type { Aviso, UrlMetadata } from '@/types'
 
@@ -50,6 +50,7 @@ export function AvisoCarouselCard({ aviso, className, onClick }: AvisoCarouselCa
   const isInstagram = isInstagramUrl(aviso.url)
   const instagramUsername = getInstagramUsername(aviso.url)
   const [isActive, setIsActive] = React.useState(false)
+  const isAviso = aviso.tipo === 'Aviso'
 
   const handleClick = React.useCallback(
     (e: React.MouseEvent) => {
@@ -78,7 +79,48 @@ export function AvisoCarouselCard({ aviso, className, onClick }: AvisoCarouselCa
     setIsActive(false)
   }, [])
 
-  const cardContent = (
+  // Render Aviso layout (title on top, description in place of image)
+  const renderAvisoContent = () => (
+    <>
+      {/* Title on top */}
+      <div className="h-16 md:h-20 flex items-center justify-center p-3 md:p-4 bg-white border-b border-gray-100">
+        <h3
+          className="font-bold text-sm md:text-base text-center text-gray-900 line-clamp-2 leading-tight w-full px-2"
+          title={aviso.titulo}
+        >
+          {aviso.titulo}
+        </h3>
+      </div>
+
+      {/* Description in place of image */}
+      <div className="flex-1 flex items-center justify-center bg-gray-50 p-4 md:p-6 min-h-0 overflow-hidden">
+        <p className="text-sm text-gray-700 text-center line-clamp-4 whitespace-pre-line">
+          {aviso.corpo}
+        </p>
+      </div>
+
+      {/* URL link at bottom */}
+      {hasUrl && (
+        <div className="h-12 flex items-center justify-center p-2 bg-white border-t border-gray-100">
+          <a
+            href={aviso.url!}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-1 text-sm text-blue-600 hover:text-blue-700 hover:underline"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <span className="truncate max-w-[150px]">
+              {new URL(aviso.url!).hostname}
+            </span>
+            <ExternalLink className="h-3 w-3 flex-shrink-0" />
+          </a>
+        </div>
+      )}
+    </>
+  )
+
+  // Render Publi layout (image on top, title at bottom - original)
+  const renderPubliContent = () => (
     <>
       {/* Image container with padding and centered image */}
       <div className="flex-1 flex items-center justify-center bg-gray-50 p-4 md:p-6 min-h-0">
@@ -129,11 +171,13 @@ export function AvisoCarouselCard({ aviso, className, onClick }: AvisoCarouselCa
     </>
   )
 
+  const cardContent = isAviso ? renderAvisoContent() : renderPubliContent()
+
   const baseClasses = cn(
-    'relative bg-white rounded-lg shadow-sm border-2 border-olive-600 transition-all duration-300 flex flex-col overflow-hidden',
+    'relative bg-white rounded-2xl shadow-sm border-2 border-olive-600 transition-all duration-300 flex flex-col overflow-hidden',
     'h-[240px] md:h-[280px]',
     (hasUrl || onClick) && 'cursor-pointer',
-    isActive ? 'scale-[0.99] shadow-md' : 'hover:scale-[1.01] hover:shadow-xl',
+    isActive ? 'scale-[0.98] shadow-md border-olive-700' : 'hover:scale-[1.02] hover:shadow-xl hover:border-olive-500',
     !hasUrl && !onClick && 'hover:shadow-md',
     className
   )

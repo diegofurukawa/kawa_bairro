@@ -79,17 +79,11 @@ export function AvisoCarousel({ avisos, className }: AvisoCarouselProps) {
     emblaApi.on('select', onSelect)
     emblaApi.on('reInit', onSelect)
 
-    // Iniciar em uma posição aleatória
-    if (avisos.length > 0) {
-      const randomIndex = Math.floor(Math.random() * avisos.length)
-      emblaApi.scrollTo(randomIndex, false) // false = sem animação no início
-    }
-
     return () => {
       emblaApi.off('select', onSelect)
       emblaApi.off('reInit', onSelect)
     }
-  }, [emblaApi, onSelect, avisos.length])
+  }, [emblaApi, onSelect])
 
   // Keyboard navigation - only when carousel is focused
   const viewportRef = React.useRef<HTMLDivElement | null>(null)
@@ -132,11 +126,11 @@ export function AvisoCarousel({ avisos, className }: AvisoCarouselProps) {
     return (
       <div className={cn('w-full py-6', className)}>
         <div className="max-w-7xl mx-auto px-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            {[1, 2, 3, 4].map((i) => (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+            {[1, 2, 3, 4, 5].map((i) => (
               <div
                 key={i}
-                className="h-[240px] md:h-[280px] bg-gray-100 rounded-lg animate-pulse"
+                className="h-[240px] md:h-[280px] bg-gray-100 rounded-xl animate-pulse"
               />
             ))}
           </div>
@@ -167,7 +161,7 @@ export function AvisoCarousel({ avisos, className }: AvisoCarouselProps) {
               {avisos.map((aviso) => (
                 <div
                   key={aviso.aviso_id}
-                  className="flex-[0_0_100%] md:flex-[0_0_calc(50%-8px)] lg:flex-[0_0_calc(25%-12px)] min-w-0 px-1"
+                  className="flex-[0_0_100%] md:flex-[0_0_calc(50%-8px)] lg:flex-[0_0_calc(20%-16px)] min-w-0 px-1"
                 >
                   <AvisoCarouselCard 
                     aviso={aviso} 
@@ -177,7 +171,7 @@ export function AvisoCarousel({ avisos, className }: AvisoCarouselProps) {
               ))}
               {/* Espaçamento fantasma com logo para garantir gap no loop */}
               <div 
-                className="flex-[0_0_100%] md:flex-[0_0_calc(50%-8px)] lg:flex-[0_0_calc(25%-12px)] min-w-0 pointer-events-none flex items-center justify-center px-1 py-2"
+                className="flex-[0_0_100%] md:flex-[0_0_calc(50%-8px)] lg:flex-[0_0_calc(20%-16px)] min-w-0 pointer-events-none flex items-center justify-center px-1 py-2"
                 aria-hidden="true"
               >
                 <div className="w-full h-full flex items-center justify-center p-4">

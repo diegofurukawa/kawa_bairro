@@ -4,16 +4,14 @@ import { CreateQuadraSchema } from '@/lib/validations/quadra'
 
 export async function GET() {
   try {
-    console.log('🔍 [API] Buscando todas as quadras...')
     const quadras = await QuadraService.findAll()
-    console.log(`📊 [API] Encontradas ${quadras.length} quadras:`, quadras.map(q => ({ id: q.quadra_id, nome: q.quadra_name })))
     
     return NextResponse.json({ 
       data: quadras, 
       success: true 
     })
   } catch (error) {
-    console.error('❌ [API] Erro ao buscar quadras:', error)
+    console.error('Erro ao buscar quadras:', error)
     return NextResponse.json(
       { error: 'Internal Server Error', success: false },
       { status: 500 }

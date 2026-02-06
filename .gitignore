@@ -6,3 +6,12 @@
 node_modules/
 
 docs/
+
+# ========================================
+# Agent & Editor
+# ========================================
+.plans/
+.reports/
+.codereview/
+.docs/
+.qoder

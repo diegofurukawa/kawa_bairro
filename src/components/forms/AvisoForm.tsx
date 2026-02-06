@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { cn } from '@/lib/utils'
 import { CreateAvisoSchema, UpdateAvisoSchema } from '@/lib/validations/aviso'
-import type { Aviso, CreateAvisoInput, UpdateAvisoInput } from '@/types'
+import type { Aviso, CreateAvisoInput, UpdateAvisoInput, AvisoTipo } from '@/types'
 
 export interface AvisoFormProps {
   aviso?: Aviso
@@ -14,6 +14,7 @@ export interface AvisoFormProps {
   onCancel?: () => void
   className?: string
   isLoading?: boolean
+  fixedTipo?: AvisoTipo // When provided, tipo is locked to this value
 }
 
 export function AvisoForm({
@@ -21,7 +22,8 @@ export function AvisoForm({
   onSubmit,
   onCancel,
   className,
-  isLoading = false
+  isLoading = false,
+  fixedTipo
 }: AvisoFormProps) {
   const [formData, setFormData] = React.useState({
     titulo: aviso?.titulo || '',
@@ -29,6 +31,7 @@ export function AvisoForm({
     url: aviso?.url || '',
     autor: aviso?.autor || '',
     fixado: aviso?.fixado || false,
+    tipo: fixedTipo || aviso?.tipo || 'Publi',
   })
 
   const [errors, setErrors] = React.useState<Record<string, string>>({})
@@ -142,6 +145,45 @@ export function AvisoForm({
           <p className="text-sm text-red-500">{errors.autor}</p>
         )}
       </div>
+
+      {/* Tipo - Hidden when fixedTipo is provided, shown as read-only when editing with different tipo */}
+      {!fixedTipo && (
+        <div className="space-y-2">
+          <Label htmlFor="tipo">Tipo</Label>
+          <select
+            id="tipo"
+            value={formData.tipo}
+            onChange={(e) => handleInputChange('tipo', e.target.value as AvisoTipo)}
+            className={cn(
+              'flex w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50'
+            )}
+            disabled={isLoading}
+          >
+            <option value="Publi">Publicidade (Publi)</option>
+            <option value="Aviso">Aviso</option>
+          </select>
+          <p className="text-xs text-gray-500">
+            Publi: Exibe imagem no carrossel | Aviso: Exibe título e descrição no carrossel
+          </p>
+        </div>
+      )}
+      
+      {/* Show fixed tipo as read-only info */}
+      {fixedTipo && (
+        <div className="space-y-2">
+          <Label>Tipo</Label>
+          <div className={cn(
+            'flex w-full rounded-md border border-input bg-gray-100 px-3 py-2 text-sm text-gray-700'
+          )}>
+            {fixedTipo === 'Aviso' ? 'Aviso (Mensagem/Notificação)' : 'Publicidade (Publi)'}
+          </div>
+          <p className="text-xs text-gray-500">
+            {fixedTipo === 'Aviso' 
+              ? 'Este item será exibido como mensagem no Mural de Avisos' 
+              : 'Este item será exibido no carrossel de Publicidades'}
+          </p>
+        </div>
+      )}
 
       {/* Fixado */}
       <div className="flex items-center space-x-2">

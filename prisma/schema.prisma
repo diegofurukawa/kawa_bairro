@@ -41,17 +41,25 @@ model Unidade {
   @@map("unidade")
 }
 
+enum AvisoTipo {
+  Aviso
+  Publi
+
+  @@map("aviso_tipo")
+}
+
 model Aviso {
-  aviso_id     Int      @id @default(autoincrement())
-  titulo       String   @db.VarChar(200)
-  corpo        String   @db.Text
-  url          String?  @db.VarChar(2048)
-  url_metadata Json?
-  autor        String?  @db.VarChar(100)
-  ativo        Boolean  @default(true)
-  fixado       Boolean  @default(false)
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  aviso_id     Int       @id @default(autoincrement())
+  titulo       String
+  corpo        String
+  url          String?
+  url_metadata String?
+  autor        String?
+  ativo        Boolean   @default(true)
+  fixado       Boolean   @default(false)
+  tipo         AvisoTipo @default(Publi)
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
 
   @@map("aviso")
   @@index([ativo, fixado, createdAt])

@@ -1,13 +1,14 @@
 'use client'
 
 import * as React from 'react'
-import { Search, MapPin, Home, Users, Phone, Grid3X3, List, X, ClipboardCheck } from 'lucide-react'
+import { Search, MapPin, Home, Grid3X3, List, X, BarChart3, LayoutList } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Chip } from '@/components/ui/chip'
 import { UnidadeCard } from '@/components/cards/UnidadeCard'
 import { UnidadeModal } from '@/components/modals/UnidadeModal'
+import { DashboardStats } from '@/components/cards/DashboardStats'
 import { cn } from '@/lib/utils'
 import { parseJsonArray } from '@/lib/utils/data'
 import type { Quadra, Unidade } from '@/types'
@@ -18,12 +19,6 @@ export interface QuadrasViewProps {
 }
 
 export function QuadrasView({ quadras, unidades }: QuadrasViewProps) {
-  console.log('🔍 [QuadrasView] Props recebidas:', { 
-    quadrasCount: quadras.length, 
-    unidadesCount: unidades.length,
-    quadras: quadras.map(q => ({ id: q.quadra_id, nome: q.quadra_name })),
-    unidades: unidades.map(u => ({ id: u.unidade_id, numero: u.unidade_numero, quadra: u.quadra?.quadra_name }))
-  })
   
   const [searchTerm, setSearchTerm] = React.useState('')
   const [selectedQuadras, setSelectedQuadras] = React.useState<string[]>([])
@@ -32,6 +27,7 @@ export function QuadrasView({ quadras, unidades }: QuadrasViewProps) {
   const [selectedUnidade, setSelectedUnidade] = React.useState<Unidade | null>(null)
   const [isModalOpen, setIsModalOpen] = React.useState(false)
   const [isMobile, setIsMobile] = React.useState(false)
+  const [mobileTab, setMobileTab] = React.useState<'stats' | 'lista'>('lista')
 
   // Detect mobile screen size
   React.useEffect(() => {
@@ -74,13 +70,6 @@ export function QuadrasView({ quadras, unidades }: QuadrasViewProps) {
 
   // Filtrar unidades baseado na pesquisa e filtros
   const filteredUnidades = React.useMemo(() => {
-    console.log('🔍 [QuadrasView] Filtrando unidades:', {
-      totalUnidades: unidades.length,
-      searchTerm,
-      selectedQuadras,
-      unidades: unidades.map(u => ({ numero: u.unidade_numero, quadra: u.quadra?.quadra_name }))
-    })
-    
     const filtered = unidades.filter(unidade => {
       // Converter dados JSON para arrays se necessário
       const moradores = parseJsonArray(unidade.mora)
@@ -102,7 +91,6 @@ export function QuadrasView({ quadras, unidades }: QuadrasViewProps) {
       return matchesSearch && matchesQuadra
     })
     
-    console.log(`📊 [QuadrasView] Unidades filtradas: ${filtered.length}`)
     return filtered
   }, [unidades, searchTerm, selectedQuadras])
 
@@ -208,308 +196,261 @@ export function QuadrasView({ quadras, unidades }: QuadrasViewProps) {
     }
   }
 
+  // Stats data
+  const statsData = {
+    totalQuadras: Object.keys(unidadesPorQuadra).length,
+    totalUnidades: filteredUnidades.length,
+    totalMoradores: totalMoradores,
+    totalContatos: totalContatos,
+    vistoria: {
+      pendente: vistoriaStats.pendente,
+      agendado: vistoriaStats.agendado,
+      remarcado: vistoriaStats.remarcado,
+      realizado: vistoriaStats.realizado,
+      reprovada: vistoriaStats.reprovada,
+      total: vistoriaStats.total,
+      percentages: vistoriaStats.percentages
+    }
+  }
+
   return (
-    <div className="space-y-6">
-      {/* Estatísticas - Hidden on mobile */}
-      {!isMobile && (
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <div className="bg-white rounded-lg p-4 shadow-sm border">
-            <div className="flex items-center gap-3">
-              <MapPin className="h-5 w-5 text-purple-brand-600" />
-              <div>
-                <p className="text-xl font-bold text-gray-900">{Object.keys(unidadesPorQuadra).length}</p>
-                <p className="text-sm text-gray-600">Quadras</p>
-              </div>
-            </div>
-          </div>
-          
-          <div className="bg-white rounded-lg p-4 shadow-sm border">
-            <div className="flex items-center gap-3">
-              <Home className="h-5 w-5 text-green-600" />
-              <div>
-                <p className="text-xl font-bold text-gray-900">{filteredUnidades.length}</p>
-                <p className="text-sm text-gray-600">Unidades</p>
-              </div>
-            </div>
-          </div>
-          
-          <div className="bg-white rounded-lg p-4 shadow-sm border">
-            <div className="flex items-center gap-3">
-              <Users className="h-5 w-5 text-purple-600" />
-              <div>
-                <p className="text-xl font-bold text-gray-900">{totalMoradores}</p>
-                <p className="text-sm text-gray-600">Moradores</p>
-              </div>
-            </div>
-          </div>
-          
-          <div className="bg-white rounded-lg p-4 shadow-sm border">
-            <div className="flex items-center gap-3">
-              <Phone className="h-5 w-5 text-orange-600" />
-              <div>
-                <p className="text-xl font-bold text-gray-900">{totalContatos}</p>
-                <p className="text-sm text-gray-600">Contatos</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Estatísticas de Vistoria */}
-      <div className="space-y-3">
-        <div className="flex items-center gap-2">
-          <ClipboardCheck className="h-5 w-5 text-blue-600" />
-          <h2 className="text-lg font-semibold text-gray-900">Status de Vistoria</h2>
-        </div>
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-4">
-          <div className="bg-white rounded-lg p-4 shadow-sm border">
-            <div className="flex items-center gap-3">
-              <div className="h-3 w-3 rounded-full bg-gray-500"></div>
-              <div className="flex-1">
-                <p className="text-xl font-bold text-gray-900">{vistoriaStats.pendente}</p>
-                <p className="text-sm text-gray-600">Pendente</p>
-                <p className="text-xs text-gray-400 mt-1">{vistoriaStats.percentages.pendente.toFixed(1)}%</p>
-              </div>
-            </div>
-          </div>
-          
-          <div className="bg-white rounded-lg p-4 shadow-sm border">
-            <div className="flex items-center gap-3">
-              <div className="h-3 w-3 rounded-full bg-yellow-500"></div>
-              <div className="flex-1">
-                <p className="text-xl font-bold text-gray-900">{vistoriaStats.agendado}</p>
-                <p className="text-sm text-gray-600">Agendado</p>
-                <p className="text-xs text-gray-400 mt-1">{vistoriaStats.percentages.agendado.toFixed(1)}%</p>
-              </div>
-            </div>
-          </div>
-          
-          <div className="bg-white rounded-lg p-4 shadow-sm border">
-            <div className="flex items-center gap-3">
-              <div className="h-3 w-3 rounded-full bg-orange-500"></div>
-              <div className="flex-1">
-                <p className="text-xl font-bold text-gray-900">{vistoriaStats.remarcado}</p>
-                <p className="text-sm text-gray-600">Remarcado</p>
-                <p className="text-xs text-gray-400 mt-1">{vistoriaStats.percentages.remarcado.toFixed(1)}%</p>
-              </div>
-            </div>
-          </div>
-          
-          <div className="bg-white rounded-lg p-4 shadow-sm border">
-            <div className="flex items-center gap-3">
-              <div className="h-3 w-3 rounded-full bg-green-500"></div>
-              <div className="flex-1">
-                <p className="text-xl font-bold text-gray-900">{vistoriaStats.realizado}</p>
-                <p className="text-sm text-gray-600">Realizado</p>
-                <p className="text-xs text-gray-400 mt-1">{vistoriaStats.percentages.realizado.toFixed(1)}%</p>
-              </div>
-            </div>
-          </div>
-          
-          <div className="bg-white rounded-lg p-4 shadow-sm border">
-            <div className="flex items-center gap-3">
-              <div className="h-3 w-3 rounded-full bg-red-500"></div>
-              <div className="flex-1">
-                <p className="text-xl font-bold text-gray-900">{vistoriaStats.reprovada}</p>
-                <p className="text-sm text-gray-600">Reprovada</p>
-                <p className="text-xs text-gray-400 mt-1">{vistoriaStats.percentages.reprovada.toFixed(1)}%</p>
-              </div>
-            </div>
-          </div>
-          
-          <div className="bg-white rounded-lg p-4 shadow-sm border border-blue-200">
-            <div className="flex items-center gap-3">
-              <ClipboardCheck className="h-4 w-4 text-blue-600" />
-              <div className="flex-1">
-                <p className="text-xl font-bold text-gray-900">{vistoriaStats.total}</p>
-                <p className="text-sm text-gray-600">Total</p>
-                <p className="text-xs text-gray-400 mt-1">100%</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Barra de pesquisa */}
-      <div className="bg-white rounded-lg shadow-sm border p-4">
-        <div className="flex flex-col lg:flex-row gap-4">
-          {/* Campo de pesquisa */}
-          <div className="flex-1">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-              <Input
-                placeholder="Pesquisar por unidade, quadra, morador ou contato..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10"
-              />
-            </div>
-          </div>
-
-          {/* Filtro de Quadras - Dropdown */}
-          <div className="w-full lg:w-64">
-            <Select 
-              value={dropdownValue}
-              onValueChange={(value) => {
-                setDropdownValue(value)
-                if (value === 'all') {
-                  setSelectedQuadras([])
-                } else {
-                  toggleQuadra(value)
-                }
-              }}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Selecionar quadras" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">Todas as quadras</SelectItem>
-                {quadras.map(quadra => (
-                  <SelectItem key={quadra.quadra_id} value={quadra.quadra_name}>
-                    {quadra.quadra_name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-
-          {/* Botão Remover Filtros */}
-          <Button
-            variant="outline"
-            onClick={clearAllFilters}
-            className="gap-2"
-          >
-            <X className="h-4 w-4" />
-            Remover Filtros
-          </Button>
-        </div>
-      </div>
-
-      {/* Chips das Quadras Selecionadas */}
-      {selectedQuadras.length > 0 && (
-        <div className="bg-white rounded-lg shadow-sm border p-4">
-          <div className="flex flex-wrap items-center gap-2">
-            <span className="text-sm font-medium text-gray-700">
-              Quadras selecionadas ({selectedQuadras.length}):
-            </span>
-            {selectedQuadras.map(quadraName => (
-              <Chip
-                key={quadraName}
-                variant="default"
-                size="sm"
-                onRemove={() => removeQuadra(quadraName)}
-                className="bg-purple-brand-100 text-purple-brand-800 hover:bg-purple-brand-200 border-purple-brand-200"
-              >
-                {quadraName}
-              </Chip>
-            ))}
+    <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+      {/* Main Content */}
+      <div className="lg:col-span-3 space-y-6">
+        {/* Mobile Tabs - Only show on mobile */}
+        {isMobile && (
+          <div className="flex border border-gray-200 rounded-xl overflow-hidden p-1 bg-gray-50">
             <Button
-              variant="ghost"
+              variant={mobileTab === 'stats' ? "default" : "ghost"}
               size="sm"
-              onClick={clearAllFilters}
-              className="text-gray-500 hover:text-gray-700 ml-2"
+              onClick={() => setMobileTab('stats')}
+              className={cn(
+                "flex-1 rounded-lg px-4 transition-all duration-200 gap-2",
+                mobileTab === 'stats' ? "bg-white shadow-sm text-purple-brand-700" : "text-gray-500"
+              )}
             >
-              Limpar todas
+              <BarChart3 className="h-4 w-4" />
+              Stats
+            </Button>
+            <Button
+              variant={mobileTab === 'lista' ? "default" : "ghost"}
+              size="sm"
+              onClick={() => setMobileTab('lista')}
+              className={cn(
+                "flex-1 rounded-lg px-4 transition-all duration-200 gap-2",
+                mobileTab === 'lista' ? "bg-white shadow-sm text-purple-brand-700" : "text-gray-500"
+              )}
+            >
+              <LayoutList className="h-4 w-4" />
+              Lista
             </Button>
           </div>
-        </div>
-      )}
+        )}
 
-      {/* Controles de visualização e resultados */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        {/* Controles de visualização - Hidden on mobile */}
-        {!isMobile && (
-          <div className="flex items-center gap-4">
-            <div className="flex border rounded-md">
-              <Button
-                variant={viewMode === 'grid' ? "default" : "ghost"}
-                size="sm"
-                onClick={() => setViewMode('grid')}
-                className="rounded-r-none"
-              >
-                <Grid3X3 className="h-4 w-4" />
-              </Button>
-              <Button
-                variant={viewMode === 'list' ? "default" : "ghost"}
-                size="sm"
-                onClick={() => setViewMode('list')}
-                className="rounded-l-none"
-              >
-                <List className="h-4 w-4" />
-              </Button>
+        {/* Mobile Stats View */}
+        {isMobile && mobileTab === 'stats' && (
+          <DashboardStats stats={statsData} />
+        )}
+
+        {/* Lista View Content - Hidden on mobile when stats tab is active */}
+        {(!isMobile || mobileTab === 'lista') && (
+          <div className="space-y-6">
+            {/* Barra de pesquisa */}
+            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 transition-all hover:shadow-md">
+              <div className="flex flex-col lg:flex-row gap-4">
+                {/* Campo de pesquisa */}
+                <div className="flex-1">
+                  <div className="relative">
+                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                    <Input
+                      placeholder="Pesquisar por unidade, quadra, morador ou contato..."
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                      className="pl-10 border-gray-200 focus:ring-purple-brand-500 rounded-xl"
+                    />
+                  </div>
+                </div>
+
+                {/* Filtro de Quadras - Dropdown */}
+                <div className="w-full lg:w-64">
+                  <Select 
+                    value={dropdownValue}
+                    onValueChange={(value) => {
+                      setDropdownValue(value)
+                      if (value === 'all') {
+                        setSelectedQuadras([])
+                      } else {
+                        toggleQuadra(value)
+                      }
+                    }}
+                  >
+                    <SelectTrigger className="border-gray-200 rounded-xl">
+                      <SelectValue placeholder="Selecionar quadras" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">Todas as quadras</SelectItem>
+                      {quadras.map(quadra => (
+                        <SelectItem key={quadra.quadra_id} value={quadra.quadra_name}>
+                          {quadra.quadra_name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                {/* Botão Remover Filtros */}
+                <Button
+                  variant="outline"
+                  onClick={clearAllFilters}
+                  className="gap-2 border-gray-200 hover:bg-gray-50 text-gray-600 rounded-xl"
+                >
+                  <X className="h-4 w-4" />
+                  Remover Filtros
+                </Button>
+              </div>
             </div>
-            
-            <div className="text-sm text-gray-600">
-              {viewMode === 'grid' ? 'Visualização em grade' : 'Visualização em lista'}
+
+            {/* Chips das Quadras Selecionadas */}
+            {selectedQuadras.length > 0 && (
+              <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-4 animate-in fade-in slide-in-from-top-2">
+                <div className="flex flex-wrap items-center gap-2">
+                  <span className="text-sm font-medium text-gray-700">
+                    Quadras selecionadas ({selectedQuadras.length}):
+                  </span>
+                  {selectedQuadras.map(quadraName => (
+                    <Chip
+                      key={quadraName}
+                      variant="default"
+                      size="sm"
+                      onRemove={() => removeQuadra(quadraName)}
+                      className="bg-purple-brand-100 text-purple-brand-800 hover:bg-purple-brand-200 border-purple-brand-200 rounded-full"
+                    >
+                      {quadraName}
+                    </Chip>
+                  ))}
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={clearAllFilters}
+                    className="text-gray-500 hover:text-gray-700 ml-2 rounded-full"
+                  >
+                    Limpar todas
+                  </Button>
+                </div>
+              </div>
+            )}
+
+            {/* Controles de visualização e resultados */}
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+              {/* Controles de visualização - Hidden on mobile */}
+              {!isMobile && (
+                <div className="flex items-center gap-4">
+                  <div className="flex border border-gray-200 rounded-xl overflow-hidden p-1 bg-gray-50">
+                    <Button
+                      variant={viewMode === 'grid' ? "default" : "ghost"}
+                      size="sm"
+                      onClick={() => setViewMode('grid')}
+                      className={cn(
+                        "rounded-lg px-4 transition-all duration-200",
+                        viewMode === 'grid' ? "bg-white shadow-sm text-purple-brand-700" : "text-gray-500"
+                      )}
+                    >
+                      <Grid3X3 className="h-4 w-4 mr-2" />
+                      Grade
+                    </Button>
+                    <Button
+                      variant={viewMode === 'list' ? "default" : "ghost"}
+                      size="sm"
+                      onClick={() => setViewMode('list')}
+                      className={cn(
+                        "rounded-lg px-4 transition-all duration-200",
+                        viewMode === 'list' ? "bg-white shadow-sm text-purple-brand-700" : "text-gray-500"
+                      )}
+                    >
+                      <List className="h-4 w-4 mr-2" />
+                      Lista
+                    </Button>
+                  </div>
+                </div>
+              )}
+
+              {/* Resultados encontrados */}
+              <div className="text-sm font-medium text-gray-500 bg-gray-100 px-4 py-1.5 rounded-full">
+                {filteredUnidades.length} unidade{filteredUnidades.length !== 1 ? 's' : ''} encontrada{filteredUnidades.length !== 1 ? 's' : ''}
+              </div>
+            </div>
+
+            {/* Resultados */}
+            <div className="space-y-8">
+              {Object.keys(unidadesPorQuadra).length === 0 ? (
+                <div className="text-center py-20 bg-white rounded-3xl border border-dashed border-gray-200">
+                  <Home className="h-16 w-16 text-gray-300 mx-auto mb-4" />
+                  <h3 className="text-xl font-bold text-gray-900 mb-2">
+                    Nenhuma unidade encontrada
+                  </h3>
+                  <p className="text-gray-500">
+                    Tente ajustar os filtros ou termo de pesquisa
+                  </p>
+                </div>
+              ) : (
+                Object.entries(unidadesPorQuadra).map(([quadraName, unidadesDaQuadra]) => (
+                  <div key={quadraName} className="space-y-4">
+                    {/* Header da Quadra */}
+                    <div className="flex flex-col sm:flex-row sm:items-center gap-3 p-5 bg-gradient-to-r from-purple-brand-50/70 to-white rounded-2xl border border-purple-brand-100 shadow-sm">
+                      <div className="flex items-center gap-3">
+                        <div className="p-2 bg-purple-brand-100 rounded-lg">
+                          <MapPin className="h-5 w-5 text-purple-brand-600" />
+                        </div>
+                        <h2 className="text-2xl font-bold text-gray-900">
+                          {quadraName}
+                        </h2>
+                      </div>
+                      <div className="flex flex-wrap gap-2">
+                        <Chip variant="secondary" className="bg-white border-purple-brand-100 text-purple-brand-700 rounded-full">
+                          {unidadesDaQuadra.length} unidade{unidadesDaQuadra.length !== 1 ? 's' : ''}
+                        </Chip>
+                        <Chip variant="default" className="bg-purple-brand-500 text-white border-none rounded-full">
+                          {unidadesDaQuadra.reduce((total, unidade) => {
+                            const moradores = parseJsonArray(unidade.mora)
+                            return total + moradores.length
+                          }, 0)} morador{unidadesDaQuadra.reduce((total, unidade) => {
+                            const moradores = parseJsonArray(unidade.mora)
+                            return total + moradores.length
+                          }, 0) !== 1 ? 'es' : ''}
+                        </Chip>
+                      </div>
+                    </div>
+                    
+                    {/* Grid de Unidades */}
+                    <div className={
+                      viewMode === 'grid' 
+                        ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-6"
+                        : "space-y-4"
+                    }>
+                      {unidadesDaQuadra.map(unidade => (
+                        <UnidadeCard 
+                          key={unidade.unidade_id} 
+                          unidade={unidade}
+                          variant={viewMode}
+                          onView={handleViewUnidade}
+                          onEdit={handleEditUnidade}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                ))
+              )}
             </div>
           </div>
         )}
+      </div>
 
-        {/* Resultados encontrados */}
-        <div className="text-sm text-gray-500">
-          {filteredUnidades.length} unidade{filteredUnidades.length !== 1 ? 's' : ''} encontrada{filteredUnidades.length !== 1 ? 's' : ''}
+      {/* Sidebar - Stats - Hidden on mobile */}
+      <aside className="hidden lg:block lg:col-span-1 space-y-6">
+        <div className="lg:sticky lg:top-24">
+          <DashboardStats stats={statsData} />
         </div>
-      </div>
-
-      {/* Resultados */}
-      <div className="space-y-6">
-        {Object.keys(unidadesPorQuadra).length === 0 ? (
-          <div className="text-center py-12">
-            <Home className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-            <h3 className="text-lg font-medium text-gray-900 mb-2">
-              Nenhuma unidade encontrada
-            </h3>
-            <p className="text-gray-600">
-              Tente ajustar os filtros ou termo de pesquisa
-            </p>
-          </div>
-        ) : (
-          Object.entries(unidadesPorQuadra).map(([quadraName, unidadesDaQuadra]) => (
-            <div key={quadraName} className="space-y-4">
-              {/* Header da Quadra */}
-              <div className="flex flex-col sm:flex-row sm:items-center gap-3 p-4 bg-gradient-to-r from-purple-brand-50/70 to-purple-brand-100/50 rounded-lg border border-purple-brand-200">
-                <div className="flex items-center gap-3">
-                  <MapPin className="h-5 w-5 text-purple-brand-600" />
-                  <h2 className="text-xl font-semibold text-gray-900">
-                    {quadraName}
-                  </h2>
-                </div>
-                <div className="flex flex-wrap gap-2">
-                  <Chip variant="secondary" size="sm">
-                    {unidadesDaQuadra.length} unidade{unidadesDaQuadra.length !== 1 ? 's' : ''}
-                  </Chip>
-                  <Chip variant="default" size="sm">
-                    {unidadesDaQuadra.reduce((total, unidade) => {
-                      const moradores = parseJsonArray(unidade.mora)
-                      return total + moradores.length
-                    }, 0)} morador{unidadesDaQuadra.reduce((total, unidade) => {
-                      const moradores = parseJsonArray(unidade.mora)
-                      return total + moradores.length
-                    }, 0) !== 1 ? 'es' : ''}
-                  </Chip>
-                </div>
-              </div>
-              
-              {/* Grid de Unidades */}
-              <div className={
-                viewMode === 'grid' 
-                  ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4"
-                  : "space-y-3"
-              }>
-                {unidadesDaQuadra.map(unidade => (
-                  <UnidadeCard 
-                    key={unidade.unidade_id} 
-                    unidade={unidade}
-                    variant={viewMode}
-                    onView={handleViewUnidade}
-                    onEdit={handleEditUnidade}
-                  />
-                ))}
-              </div>
-            </div>
-          ))
-        )}
-      </div>
+      </aside>
 
       {/* Modal */}
       <UnidadeModal

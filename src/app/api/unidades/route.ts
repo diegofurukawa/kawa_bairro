@@ -4,16 +4,14 @@ import { CreateUnidadeSchema } from '@/lib/validations/unidade'
 
 export async function GET() {
   try {
-    console.log('🔍 [API] Buscando todas as unidades...')
     const unidades = await UnidadeService.findAll()
-    console.log(`📊 [API] Encontradas ${unidades.length} unidades:`, unidades.map(u => ({ id: u.unidade_id, numero: u.unidade_numero, quadra: u.quadra?.quadra_name })))
     
     return NextResponse.json({ 
       data: unidades, 
       success: true 
     })
   } catch (error) {
-    console.error('❌ [API] Erro ao buscar unidades:', error)
+    console.error('Erro ao buscar unidades:', error)
     return NextResponse.json(
       { error: 'Internal Server Error', success: false },
       { status: 500 }

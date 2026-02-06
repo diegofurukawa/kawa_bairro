@@ -2,24 +2,25 @@ import { prisma } from '@/lib/prisma'
 import { CreateUnidadeInput, UpdateUnidadeInput } from '@/lib/validations/unidade'
 import type { Unidade } from '@/types'
 import { parseJsonArray } from '@/lib/utils/data'
+import type { Prisma } from '@prisma/client'
+
+// Tipo para dados brutos do Prisma (com JSON fields como string)
+type UnidadeWithQuadra = Prisma.UnidadeGetPayload<{
+  include: { quadra: true }
+}>
 
 // Função para transformar dados do Prisma para o formato Unidade
-function transformUnidade(data: any): Unidade {
+function transformUnidade(data: UnidadeWithQuadra): Unidade {
   return {
     ...data,
     mora: data.mora ? parseJsonArray(data.mora) : null,
-    contato: data.contato ? parseJsonArray(data.contato) : null
+    contato: data.contato ? parseJsonArray(data.contato) : null,
+    vistoria: data.vistoria as Unidade['vistoria']
   }
 }
 
 export class UnidadeService {
   static async findAll(): Promise<Unidade[]> {
-    console.log('🔍 [UnidadeService] Executando findAll...')
-    
-    // Teste direto no banco
-    const count = await prisma.unidade.count()
-    console.log(`🔍 [UnidadeService] Total de unidades no banco: ${count}`)
-    
     const unidades = await prisma.unidade.findMany({
       include: {
         quadra: true
@@ -29,10 +30,7 @@ export class UnidadeService {
         { unidade_numero: 'asc' }
       ]
     })
-    console.log(`📊 [UnidadeService] Prisma retornou ${unidades.length} unidades`)
-    const transformed = unidades.map(transformUnidade)
-    console.log(`✅ [UnidadeService] Transformadas ${transformed.length} unidades`)
-    return transformed
+    return unidades.map(transformUnidade)
   }
 
   static async findById(id: number): Promise<Unidade | null> {
@@ -83,10 +81,10 @@ export class UnidadeService {
   }
 
   static async update(id: number, data: UpdateUnidadeInput): Promise<Unidade> {
-    const updateData: any = {}
+    const updateData: Prisma.UnidadeUpdateInput = {}
 
     if (data.unidade_numero) updateData.unidade_numero = data.unidade_numero
-    if (data.quadra_id) updateData.quadra_id = data.quadra_id
+    if (data.quadra_id) updateData.quadra = { connect: { quadra_id: data.quadra_id } }
     if (data.mora) updateData.mora = JSON.stringify(data.mora)
     if (data.contato !== undefined) {
       updateData.contato = data.contato ? JSON.stringify(data.contato) : null

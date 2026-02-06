@@ -4,16 +4,9 @@ import type { Quadra } from '@/types'
 
 export class QuadraService {
   static async findAll(): Promise<Quadra[]> {
-    console.log('🔍 [QuadraService] Executando findAll...')
-    
-    // Teste direto no banco
-    const count = await prisma.quadra.count()
-    console.log(`🔍 [QuadraService] Total de quadras no banco: ${count}`)
-    
     const quadras = await prisma.quadra.findMany({
       orderBy: { quadra_name: 'asc' }
     })
-    console.log(`📊 [QuadraService] Prisma retornou ${quadras.length} quadras`)
     return quadras
   }
 

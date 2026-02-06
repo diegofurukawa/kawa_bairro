@@ -1,74 +1,78 @@
-FROM node:20-alpine
+# =============================================================================
+# STAGE 1: Dependencies
+# =============================================================================
+FROM node:20-alpine AS deps
 
-# Install required dependencies for Prisma and PostgreSQL
-RUN apk add --no-cache openssl libc6-compat postgresql-client
+# Install required dependencies for Prisma and build tools
+RUN apk add --no-cache openssl libc6-compat python3 make g++
 
 WORKDIR /app
 
 # Copy package files
-COPY package*.json ./
-
-# Copy Prisma schema first (needed for postinstall)
+COPY package.json yarn.lock ./
 COPY prisma ./prisma
 
-# Install dependencies (this will run prisma generate via postinstall)
-RUN npm install
+# Install dependencies with timeout and network retries
+# Use --network-timeout for slow networks
+RUN yarn install --frozen-lockfile --production=false --network-timeout 100000
 
-# Copy rest of source code
+# =============================================================================
+# STAGE 2: Builder
+# =============================================================================
+FROM node:20-alpine AS builder
+
+# Install required dependencies
+RUN apk add --no-cache openssl libc6-compat
+
+WORKDIR /app
+
+# Copy dependencies from deps stage
+COPY --from=deps /app/node_modules ./node_modules
+COPY --from=deps /app/package.json /app/yarn.lock ./
+COPY --from=deps /app/prisma ./prisma
+
+# Copy source code
 COPY . .
-
-# Ensure upload directory exists and copy carga.txt
-RUN mkdir -p /app/upload
-COPY upload/carga.txt /app/upload/carga.txt
-
-# Database URL will be set via ARG and ENV from docker-compose
-
-# Initialize database and import data from carga.txt
-# RUN npm run db:init && npm run db:import
-# RUN npx prisma db push && yarn db:init && yarn db:import
 
 # Build the application
 RUN yarn build
 
-# Accept build arguments from .env
-ARG EXTERNAL_PORT=3313
-ARG INTERNAL_PORT=3313
-ARG POSTGRES_HOST
-ARG POSTGRES_PORT
-ARG POSTGRES_USER
-ARG POSTGRES_PASSWORD
-ARG POSTGRES_DB
-ARG POSTGRES_SSL=false
-ARG DATABASE_URL
+# =============================================================================
+# STAGE 3: Runtime
+# =============================================================================
+FROM node:20-alpine AS runtime
 
-# Set environment variables
+# Install minimal runtime dependencies
+RUN apk add --no-cache openssl libc6-compat
+
+WORKDIR /app
+
+# Create non-root user for security
+RUN addgroup --system --gid 1001 nodejs && \
+    adduser --system --uid 1001 nextjs
+
+# Copy necessary files from builder
+COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
+COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
+COPY --from=builder --chown=nextjs:nodejs /app/public ./public
+COPY --from=builder --chown=nextjs:nodejs /app/prisma ./prisma
+COPY --from=builder --chown=nextjs:nodejs /app/node_modules/.bin/prisma ./node_modules/.bin/prisma
+COPY --from=builder --chown=nextjs:nodejs /app/node_modules/@prisma ./node_modules/@prisma
+COPY --from=builder --chown=nextjs:nodejs /app/node_modules/prisma ./node_modules/prisma
+
+# Ensure upload directory exists
+RUN mkdir -p /app/upload && chown nextjs:nodejs /app/upload
+
+# Switch to non-root user
+USER nextjs
+
+# Expose port (fixed - no variables in EXPOSE)
+EXPOSE 3000
+
+# Set environment
 ENV NODE_ENV=production
-ENV PORT=${INTERNAL_PORT}
-ENV EXTERNAL_PORT=${EXTERNAL_PORT}
-ENV POSTGRES_HOST=${POSTGRES_HOST}
-ENV POSTGRES_PORT=${POSTGRES_PORT}
-ENV POSTGRES_USER=${POSTGRES_USER}
-ENV POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
-ENV POSTGRES_DB=${POSTGRES_DB}
-ENV POSTGRES_SSL=${POSTGRES_SSL}
-ENV DATABASE_URL=${DATABASE_URL}
+ENV PORT=3000
+ENV HOSTNAME="0.0.0.0"
 
-# Expose the external port
-EXPOSE ${EXTERNAL_PORT}
-
-# Create startup script for migrations
-RUN echo '#!/bin/sh' > /app/start.sh && \
-    echo 'echo "🚀 Starting application..."' >> /app/start.sh && \
-    echo 'echo "🔄 Running database migrations..."' >> /app/start.sh && \
-    echo 'npx prisma generate' >> /app/start.sh && \
-    echo 'npx prisma db push --accept-data-loss' >> /app/start.sh && \
-    echo 'echo "✅ Database migrations completed!"' >> /app/start.sh && \
-    echo 'echo "🔄 Running custom migrations..."' >> /app/start.sh && \
-    echo 'node scripts/migrate-db.js' >> /app/start.sh && \
-    echo 'echo "✅ Custom migrations completed!"' >> /app/start.sh && \
-    echo 'echo "🚀 Starting application server..."' >> /app/start.sh && \
-    echo 'yarn start' >> /app/start.sh && \
-    chmod +x /app/start.sh
-
-# Start the application with automatic migrations
-CMD ["/app/start.sh"]
+# Start the application
+CMD ["node", "server.js"]

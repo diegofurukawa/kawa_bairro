@@ -83,6 +83,8 @@ export interface ApiError {
   success: false
 }
 
+export type AvisoTipo = 'Aviso' | 'Publi'
+
 export interface UrlMetadata {
   title?: string
   description?: string
@@ -100,6 +102,7 @@ export interface Aviso {
   autor?: string | null
   ativo: boolean
   fixado: boolean
+  tipo: AvisoTipo
   createdAt: Date
   updatedAt: Date
 }
@@ -110,6 +113,7 @@ export interface CreateAvisoInput {
   url?: string
   autor?: string
   fixado?: boolean
+  tipo?: AvisoTipo
 }
 
 export interface UpdateAvisoInput {
@@ -118,4 +122,5 @@ export interface UpdateAvisoInput {
   url?: string
   autor?: string
   fixado?: boolean
+  tipo?: AvisoTipo
 }

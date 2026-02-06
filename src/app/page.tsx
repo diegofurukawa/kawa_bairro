@@ -3,38 +3,19 @@ import { UnidadeService } from '@/lib/services/unidadeService'
 import { AvisoService } from '@/lib/services/avisoService'
 import { QuadrasView } from '@/components/views/QuadrasView'
 import { AvisoCarouselClient } from '@/components/carousel/AvisoCarouselClient'
-import { Home, MapPin, Plus, MessageSquare } from 'lucide-react'
-import Link from 'next/link'
-import { Button } from '@/components/ui/button'
 import type { Quadra, Unidade, Aviso } from '@/types'
 
 async function getData() {
   try {
-    console.log('🔍 [HomePage] Carregando dados...')
-    console.log('🔍 [HomePage] DATABASE_URL:', process.env.DATABASE_URL)
-
     const [quadras, unidades, avisos] = await Promise.all([
       QuadraService.findAll(),
       UnidadeService.findAll(),
       AvisoService.findAll()
     ])
 
-    console.log(`📊 [HomePage] Dados carregados:`, {
-      quadras: quadras.length,
-      unidades: unidades.length,
-      avisos: avisos.length,
-      quadrasData: quadras.map(q => ({ id: q.quadra_id, nome: q.quadra_name })),
-      unidadesData: unidades.map(u => ({ id: u.unidade_id, numero: u.unidade_numero, quadra: u.quadra?.quadra_name }))
-    })
-
-    // Log adicional para debug
-    console.log('🔍 [HomePage] Primeira quadra:', quadras[0])
-    console.log('🔍 [HomePage] Primeira unidade:', unidades[0])
-
     return { quadras, unidades, avisos }
   } catch (error) {
-    console.error('❌ [HomePage] Erro ao carregar dados:', error)
-    console.error('❌ [HomePage] Stack trace:', error instanceof Error ? error.stack : 'No stack trace')
+    console.error('Erro ao carregar dados:', error)
     return { quadras: [], unidades: [], avisos: [] }
   }
 }
@@ -43,16 +24,10 @@ async function getData() {
 export const dynamic = 'force-dynamic'
 
 export default async function HomePage() {
-  console.log('🔍 [HomePage] Iniciando renderização...')
-
   const { quadras, unidades, avisos } = await getData()
 
-  // Log adicional para debug no servidor
-  console.log('🔍 [HomePage] Renderizando com dados:', {
-    quadrasCount: quadras.length,
-    unidadesCount: unidades.length,
-    avisosCount: avisos.length
-  })
+  // Filter only Publi avisos for carousel
+  const publiAvisos = avisos.filter(a => a.tipo === 'Publi')
 
   return (
     <div className="max-w-7xl mx-auto space-y-6">
@@ -63,35 +38,12 @@ export default async function HomePage() {
         <p className="text-olive-700">
           Visualize todas as quadras e unidades cadastradas no bairro
         </p>
-
-
-        {/* Navigation Buttons */}
-        <div className="flex flex-row gap-4 justify-center items-center">
-          <Link href="/cadastrar">
-            <Button variant="secondary" className="gap-2 bg-purple-brand-500 hover:bg-purple-brand-600 text-white">
-              <Plus className="h-4 w-4" />
-              Cadastrar
-            </Button>
-          </Link>
-          <Link href="/">
-            <Button variant="default" className="gap-2 bg-olive-600 hover:bg-olive-700 text-white">
-              <MapPin className="h-4 w-4" />
-              Quadras
-            </Button>
-          </Link>
-          <Link href="/avisos">
-            <Button variant="default" className="gap-2 bg-blue-600 hover:bg-blue-700 text-white">
-              <MessageSquare className="h-4 w-4" />
-              Avisos
-            </Button>
-          </Link>
-        </div>
       </div>
 
-      {/* Carrossel de Avisos */}
-      {avisos.length > 0 && (
+      {/* Carrossel de Publicidade (somente Publi) */}
+      {publiAvisos.length > 0 && (
         <div className="-mx-6">
-          <AvisoCarouselClient avisos={avisos} />
+          <AvisoCarouselClient avisos={publiAvisos} />
         </div>
       )}
 

@@ -37,12 +37,7 @@
     "embla-carousel-autoplay": "^8.6.0",
     "embla-carousel-react": "^8.6.0",
     "lucide-react": "^0.294.0",
-    "metascraper": "^5.49.5",
-    "metascraper-description": "^5.49.5",
-    "metascraper-image": "^5.49.5",
-    "metascraper-logo-favicon": "^5.49.5",
-    "metascraper-title": "^5.49.5",
-    "metascraper-url": "^5.49.5",
+
     "next": "^15.0.0",
     "pg": "^8.16.3",
     "react": "^18.2.0",

@@ -24,6 +24,7 @@ export const CreateAvisoSchema = z.object({
     .optional()
     .or(z.literal('')),
   fixado: z.boolean().optional().default(false),
+  tipo: z.enum(['Aviso', 'Publi']).optional().default('Publi'),
 })
 
 export const UpdateAvisoSchema = CreateAvisoSchema.partial()
