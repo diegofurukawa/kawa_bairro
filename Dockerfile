@@ -42,6 +42,8 @@ RUN yarn build
 # =============================================================================
 FROM node:20-alpine AS runtime
 
+ARG FRONTEND_PORT
+
 # Install minimal runtime dependencies
 RUN apk add --no-cache openssl libc6-compat
 
@@ -66,13 +68,12 @@ RUN mkdir -p /app/upload && chown nextjs:nodejs /app/upload
 # Switch to non-root user
 USER nextjs
 
-# Expose port (fixed - no variables in EXPOSE)
-EXPOSE 3000
-
 # Set environment
 ENV NODE_ENV=production
-ENV PORT=3000
+ENV PORT=${FRONTEND_PORT}
 ENV HOSTNAME="0.0.0.0"
+
+EXPOSE ${FRONTEND_PORT}
 
 # Start the application
 CMD ["node", "server.js"]

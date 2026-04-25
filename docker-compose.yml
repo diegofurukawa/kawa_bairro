@@ -1,83 +1,55 @@
-# =============================================================================
-# PRODUCTION STACK - Portainer Deploy Ready
-# =============================================================================
-# This stack is designed for Portainer deployment with:
-# - External network consumption (kawatech-network)
-# - Separate migration service
-# - Multi-stage Docker build
-# - No registry dependencies
-# =============================================================================
-
 services:
-  # ===========================================================================
-  # MIGRATION SERVICE
-  # ===========================================================================
-  # Runs Prisma migrations before app starts
-  # Container is ephemeral - exits after completion
-  # ===========================================================================
   migrate:
     build:
       context: .
       target: deps
       args:
-        - NODE_ENV=production
+        NODE_ENV: production
+        FRONTEND_PORT: ${FRONTEND_PORT}
     environment:
-      - DATABASE_URL=${DATABASE_URL}
+      DATABASE_URL: ${DATABASE_URL}
+      DB_HOST: ${DB_HOST}
+      DB_PORT: ${DB_PORT}
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_NAME: ${DB_NAME}
+      DB_SCHEMA: ${DB_SCHEMA}
+      DB_SSL: ${DB_SSL}
     command: >
       sh -c "
-        echo '⏳ Waiting for database...' &&
-        sleep 5 &&
-        echo '🔄 Running Prisma migrations...' &&
+        echo 'Running Prisma migrations...' &&
         npx prisma migrate deploy &&
-        echo '✅ Migrations completed successfully!'
+        echo 'Migrations completed successfully.'
       "
-    networks:
-      kawatech-network:
-        # ipv4_address: ${IP_KAWA_MIGRATE:-10.10.0.25}
     restart: "no"
-    deploy:
-      restart_policy:
-        condition: none
 
-  # ===========================================================================
-  # APPLICATION SERVICE
-  # ===========================================================================
-  # Serves the Next.js application
-  # Depends on successful migration completion
-  # ===========================================================================
   app:
     build:
       context: .
       target: runtime
       args:
-        - NODE_ENV=production
+        NODE_ENV: production
+        FRONTEND_PORT: ${FRONTEND_PORT}
     environment:
-      - NODE_ENV=production
-      - PORT=3000
-      - DATABASE_URL=${DATABASE_URL}
+      NODE_ENV: production
+      PORT: ${FRONTEND_PORT}
+      DATABASE_URL: ${DATABASE_URL}
+      DB_HOST: ${DB_HOST}
+      DB_PORT: ${DB_PORT}
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_NAME: ${DB_NAME}
+      DB_SCHEMA: ${DB_SCHEMA}
+      DB_SSL: ${DB_SSL}
     ports:
-      - "${EXTERNAL_PORT:-3313}:3000"
-    networks:
-      kawatech-network:
-        ipv4_address: ${IP_KAWA_APP:-10.10.0.30}
+      - "${FRONTEND_PORT}:${FRONTEND_PORT}"
     depends_on:
       migrate:
         condition: service_completed_successfully
     healthcheck:
-      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3000/api/health"]
+      test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider http://127.0.0.1:$${PORT}/api/health || exit 1"]
       interval: 30s
       timeout: 10s
       retries: 3
       start_period: 40s
     restart: unless-stopped
-
-# =============================================================================
-# NETWORK CONFIGURATION
-# =============================================================================
-# Uses external network managed outside this stack
-# Network must be created beforehand: docker network create kawatech-network
-# =============================================================================
-networks:
-  kawatech-network:
-    external: true
-    name: ${DOCKER_NETWORK_NAME:-kawatech-network}

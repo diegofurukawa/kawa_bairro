@@ -3,6 +3,7 @@
 .claude/
 
 .env*.local
+.env
 node_modules/
 
 docs/
