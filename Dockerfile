@@ -12,9 +12,9 @@ WORKDIR /app
 COPY package.json yarn.lock ./
 COPY prisma ./prisma
 
-# Install dependencies with timeout and network retries
-# Use --network-timeout for slow networks
-RUN yarn install --frozen-lockfile --production=false --network-timeout 100000
+# Install dependencies without lifecycle scripts; Prisma Client is generated explicitly below.
+RUN yarn install --frozen-lockfile --production=false --network-timeout 300000 --non-interactive --ignore-scripts
+RUN yarn prisma generate
 
 # =============================================================================
 # STAGE 2: Builder
