@@ -5,7 +5,7 @@ services:
       target: deps
       args:
         NODE_ENV: production
-        FRONTEND_PORT: ${FRONTEND_PORT}
+        FRONTEND_PORT: ${FRONTEND_PORT:?FRONTEND_PORT is required}
     environment:
       DATABASE_URL: ${DATABASE_URL}
       DB_HOST: ${DB_HOST}
@@ -29,10 +29,10 @@ services:
       target: runtime
       args:
         NODE_ENV: production
-        FRONTEND_PORT: ${FRONTEND_PORT}
+        FRONTEND_PORT: ${FRONTEND_PORT:?FRONTEND_PORT is required}
     environment:
       NODE_ENV: production
-      PORT: ${FRONTEND_PORT}
+      PORT: ${FRONTEND_PORT:?FRONTEND_PORT is required}
       DATABASE_URL: ${DATABASE_URL}
       DB_HOST: ${DB_HOST}
       DB_PORT: ${DB_PORT}
@@ -42,7 +42,7 @@ services:
       DB_SCHEMA: ${DB_SCHEMA}
       DB_SSL: ${DB_SSL}
     ports:
-      - "${FRONTEND_PORT}:${FRONTEND_PORT}"
+      - "${FRONTEND_PORT:?FRONTEND_PORT is required}:${FRONTEND_PORT:?FRONTEND_PORT is required}"
     depends_on:
       migrate:
         condition: service_completed_successfully
